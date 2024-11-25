@@ -16,6 +16,6 @@ for _ in range(12):
         month.append(randint(0, 31))
     temperature.append(month)
 
-avarages_temperature = sorted(average_temperature(temperature))
+avarage_temperatures = sorted(average_temperature(temperature))
 
-print(avarages_temperature)
+print(avarages_temperatures)
