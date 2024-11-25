@@ -1,12 +1,14 @@
 sum = 0
 multi = 1
 
+
 def get_value():
     try:
         return int(input())
     except:
         print("Введите число")
         return get_value()
+
 
 num = get_value()
 
@@ -19,6 +21,6 @@ while num != 0:
 
     num = get_value()
 
-print(sum)
-print(multi)
-print(sum/quantity)
+print("Сумма чисел", sum)
+print("Умножение чисел", multi)
+print("Среднее чисел", sum / quantity)
