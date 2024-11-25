@@ -14,5 +14,5 @@ for x in strings:
     elif len(x) < len(shortest_string):
         shortest_string = x
 
-print("Самый короткий элемент массива: \"" + shortest_string +'"')
-print("Самый длинный элемент массива: \"" +longest_string +'"')
+print('Самый короткий элемент массива: "' + shortest_string + '"')
+print('Самый длинный элемент массива: "' + longest_string + '"')
