@@ -1,26 +1,28 @@
-sum = 0
-multi = 1
-
-
-def get_value():
+def get_int_value_from_user():
     try:
         return int(input())
     except:
         print("Введите число")
-        return get_value()
+        return get_int_value_from_user()
 
 
-num = get_value()
+number = get_int_value_from_user()
+
+summary = 0
+multiplication = 1
 
 quantity = 0
-while num != 0:
-    sum += num
-    multi *= num
+
+while number != 0:
+    summary += number
+    multiplication *= number
 
     quantity += 1
 
-    num = get_value()
+    number = get_int_value_from_user()
 
-print("Сумма чисел", sum)
-print("Умножение чисел", multi)
-print("Среднее чисел", sum / quantity)
+avarage_number = summary / quantity
+
+print("Сумма чисел", summary)
+print("Умножение чисел", multiplication)
+print("Среднее чисел", avarage_number)

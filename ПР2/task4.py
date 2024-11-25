@@ -1,7 +1,7 @@
 from random import randint
 
 
-def average_temp(temperature):
+def average_temperature(temperature):
     array = []
     for i in range(12):
         array.append(sum(temperature[i]) / 30)
@@ -16,6 +16,6 @@ for _ in range(12):
         month.append(randint(0, 31))
     temperature.append(month)
 
-avarages_temperature = sorted(average_temp(temperature))
+avarages_temperature = sorted(average_temperature(temperature))
 
 print(avarages_temperature)
