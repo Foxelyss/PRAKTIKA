@@ -18,4 +18,4 @@ for _ in range(12):
 
 avarage_temperatures = sorted(average_temperature(temperature))
 
-print(avarages_temperatures)
+print(avarage_temperatures)

@@ -23,7 +23,7 @@ for x in range(12):
 
     temperature[months[x]] = month
 
-avarages_temperature = average_temp(temperature)
+avarage_temperatures = average_temp(temperature)
 
-for key, value in avarages_temperature.items():
+for key, value in avarage_temperatures.items():
     print(f"Месяц {key}. Средняя температура: {value}")
