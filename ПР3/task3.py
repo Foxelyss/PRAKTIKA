@@ -1,4 +1,5 @@
-height = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+with open("heights.txt","r") as file:
+    height = list(map(int, file.read().split()))
 
 max_area = 0
 for x in range(len(height)):
