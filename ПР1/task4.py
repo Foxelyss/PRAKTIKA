@@ -2,7 +2,7 @@ from random import randint
 
 
 def generate_array_of_random_int(start, end):
-    array = [randint(start, end) for i in range(10)]
+    array = [randint(start, end) for _ in range(10)]
     return array
 
 
