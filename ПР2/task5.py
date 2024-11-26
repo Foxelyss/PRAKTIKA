@@ -6,9 +6,7 @@ months = ["январь", "февраль", "март", "апрель", "май"
 
 def average_temp(temperature):
     averages = {}
-    for i in range(12):
-        month = months[i]
-
+    for month in temperature.keys():
         averages[month] = sum(temperature[month]) / 30
     return averages
 
