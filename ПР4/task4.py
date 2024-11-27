@@ -2,19 +2,15 @@ with open("numsTask4.txt", "r") as file:
     numbers = list(map(int, file.read().split()))
 
 repeating_numbers_quantity = 0
-number_quantity = 1
-last_num = numbers[0]
+number_not_repeating = True
 
 for i in range(1, len(numbers)):
-    if last_num == numbers[i]:
-        number_quantity += 1
-    elif number_quantity != 1:
-        repeating_numbers_quantity += number_quantity
-        number_quantity = 1
+    if numbers[i - 1] == numbers[i] and number_not_repeating:
+        number_not_repeating = False
+        repeating_numbers_quantity += 2
+    elif numbers[i - 1] == numbers[i]:
+        repeating_numbers_quantity += 1
+    else:
+        number_not_repeating = True
 
-    if i == len(numbers) - 1:
-        repeating_numbers_quantity += number_quantity
-
-    last_num = numbers[i]
-
-print("Количество одинаковых рядом стоящих чисел:",repeating_numbers_quantity)
+print("Количество одинаковых рядом стоящих чисел:", repeating_numbers_quantity)
