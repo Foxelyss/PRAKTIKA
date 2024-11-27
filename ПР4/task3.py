@@ -12,4 +12,4 @@ for i in numbers:
     elif i < min_nums:
         min_nums = i
 
-print(min_nums/max_nums)
+print("Отношение минимума к максимуму чисел до нуля", min_nums / max_nums)

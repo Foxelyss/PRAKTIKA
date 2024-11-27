@@ -8,4 +8,4 @@ for x in numbers:
     elif x > 0:
         sum_of_positive_numbers += x
 
-print(sum_of_positive_numbers)
+print("Сумма положительных элементов до нуля:", sum_of_positive_numbers)
