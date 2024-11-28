@@ -2,7 +2,6 @@ with open("numsTask2.txt", "r") as file:
     numbers = list(map(float, file.read().split(";")))
 
 
-#5;3;11.22;15;28;25.5;14.78;2;8;7;33;14.77;11.11
 def heapify(arr, n, i):
     largest = i
     left_index = 2 * i + 1
@@ -32,5 +31,4 @@ def heap_sort(arr):
 heap_sort(numbers)
 
 with open("numsTask2.txt", "w") as file:
-    for i in numbers:
-        file.write(str(i)+";")
+    print(*numbers, sep=";", file=file)
