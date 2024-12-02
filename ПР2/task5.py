@@ -13,13 +13,13 @@ def get_avarage_temperatures(temperature):
 
 temperature = {}
 
-for x in range(12):
+for x in months:
     month = []
 
     for i in range(30):
         month.append(randint(0, 31))
 
-    temperature[months[x]] = month
+    temperature[x] = month
 
 avarage_temperatures = get_avarage_temperatures(temperature)
 
