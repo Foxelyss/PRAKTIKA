@@ -60,7 +60,7 @@ def add_task(content):
     task_date = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
     task = {
         "status": False,
-        "name":name_task,
+        "name": name_task,
         "description": task_description,
         "data": task_date
     }
@@ -93,7 +93,7 @@ def editing_task(content):
         task_date = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
 
         if task_name != "":
-            content[task_index]['description'] = task_name
+            content[task_index]['name'] = task_name
         if task_description != "":
             content[task_index]['description'] = task_description
         if task_date != "":
@@ -140,6 +140,7 @@ def completed_tasks(content):
     for i in content:
         if i['status']:
             print(f"{i['name']} - {i['description']} <- дo {i['data']}")
+
 
 while True:
     content = load_content()
