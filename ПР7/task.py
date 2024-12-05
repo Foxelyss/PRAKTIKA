@@ -35,7 +35,7 @@ def view_task_long():
         print("Статус:", i['status'])  # поменять вывод статуса заместо False писать невыполнено, а на True выполнено
         print("Название задачи:", i['name_and_description'][0])
         print("Описание задачи:", i['name_and_description'][1])
-        print("Дата окончания задачи:", datetime.strptime(i['data'], "%Y-%m-%d"))
+        print("Дата окончания задачи:", datetime.strftime(datetime.strptime(i['data'], "%Y-%m-%d").date(),"%Y.%m.%d"))
 
 
 def filter_data(content, fil_data):
@@ -48,7 +48,7 @@ def view_task_short(content):
     print("\nСписок задач")
     for i in range(len(content)):
         print(
-            f"{i + 1}. {content['name_and_description'][0]} - {content['name_and_description'][1]} (до {content['data']})")
+            f"{i + 1}. {content[i]['name_and_description'][0]} - {content[i]['name_and_description'][1]} (до {content[i]['data']})")
 
 
 def add_task(content):

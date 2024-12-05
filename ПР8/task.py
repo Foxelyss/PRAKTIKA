@@ -6,6 +6,13 @@ API_key = '***REMOVED***'
 
 
 def weather_city(lat_lon):
+    weathers = load_history()
+    current_date = datetime.now().date()
+
+    for x in weathers:
+        if x["date"] == str(current_date):
+            return x
+
     base_url = 'https://api.openweathermap.org/data/2.5/weather'
     params = {
         'appid': API_key,
@@ -41,7 +48,7 @@ def location_lat_lon_city(city):
 
 def load_history():
     try:
-        with open("weather_history.json", "r") as file:
+        with open("weather_history.json", "r", encoding='utf8') as file:
             return json.load(file)
     except:
         return []
@@ -64,17 +71,9 @@ print("Температура максимальная:", mean['main']['temp_max
 print("Видимость (м):", mean['visibility'])
 print("Скорость ветра (м/с):", mean['wind']['speed'])
 
-save = {
-    "date": str(datetime.now().date()),
-    "default": city,
-    "description": mean['weather'][0]['description'],
-    "temp": mean['main']['temp'],
-    "feels_like": mean['main']['feels_like'],
-    "temp_min": mean['main']['temp_min'],
-    "temp_max": mean['main']['temp_max'],
-    "visibility": mean['visibility'],
-    "speed": mean['wind']['speed']
-}
+save = mean
+save["date"]: str(datetime.now().date())
+save["default"]: city
 
 history.append(save)
 with open("weather_history.json", "w", encoding='utf8') as file:
