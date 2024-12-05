@@ -2,12 +2,95 @@
   {
     "date": "2024-12-05",
     "default": "Томск",
-    "description": "небольшой снег",
-    "temp": -4.95,
-    "feels_like": -11.73,
-    "temp_min": -5.92,
-    "temp_max": -4.86,
-    "visibility": 3700,
-    "speed": 6
+    "coord": {
+      "lon": 84.9667,
+      "lat": 56.5
+    },
+    "weather": [
+      {
+        "id": 600,
+        "main": "Snow",
+        "description": "небольшой снег",
+        "icon": "13n"
+      }
+    ],
+    "base": "stations",
+    "main": {
+      "temp": -5.07,
+      "feels_like": -12.07,
+      "temp_min": -5.59,
+      "temp_max": -5.07,
+      "pressure": 1029,
+      "humidity": 93,
+      "sea_level": 1029,
+      "grnd_level": 1014
+    },
+    "visibility": 3500,
+    "wind": {
+      "speed": 7,
+      "deg": 230
+    },
+    "clouds": {
+      "all": 100
+    },
+    "dt": 1733365859,
+    "sys": {
+      "type": 2,
+      "id": 2032314,
+      "country": "RU",
+      "sunrise": 1733366205,
+      "sunset": 1733391911
+    },
+    "timezone": 25200,
+    "id": 1489425,
+    "name": "Томск",
+    "cod": 200
+  },
+  {
+    "date": "2024-12-05",
+    "default": "Томск",
+    "coord": {
+      "lon": 84.9667,
+      "lat": 56.5
+    },
+    "weather": [
+      {
+        "id": 600,
+        "main": "Snow",
+        "description": "небольшой снег",
+        "icon": "13n"
+      }
+    ],
+    "base": "stations",
+    "main": {
+      "temp": -5.07,
+      "feels_like": -12.07,
+      "temp_min": -5.59,
+      "temp_max": -5.07,
+      "pressure": 1029,
+      "humidity": 93,
+      "sea_level": 1029,
+      "grnd_level": 1014
+    },
+    "visibility": 3500,
+    "wind": {
+      "speed": 7,
+      "deg": 230
+    },
+    "clouds": {
+      "all": 100
+    },
+    "dt": 1733365859,
+    "sys": {
+      "type": 2,
+      "id": 2032314,
+      "country": "RU",
+      "sunrise": 1733366205,
+      "sunset": 1733391911
+    },
+    "timezone": 25200,
+    "id": 1489425,
+    "name": "Томск",
+    "cod": 200
   }
 ]
