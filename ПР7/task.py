@@ -20,30 +20,27 @@ def check_dates(content):
     for i in content:
         data = datetime.strptime(i['data'], "%Y-%m-%d").date()
         if data < datetime.now().date():
-            content[n]['status'] = True
+            content[n]["completed"] = True
         n += 1
     save_content(content)
 
 
-def view_task_long():
+def view_task_long(tasks):
     task_number = 1
     statuses = ["завершено", "в будущем"]
-
-    with open("notebook.json", "r") as file:
-        tasks = json.load(file)
 
     for i in tasks:
         print("\nНомер задачи <-", task_number)
         task_number += 1
-        print("Статус:", statuses[int(i['status'])])
+        print("Статус:", statuses[int(i["completed"])])
         print("Название задачи:", i['name'])
         print("Описание задачи:", i['description'])
         print("Дата окончания задачи:", i['data'])
 
 
-def filter_data(content, fil_data):
+def get_tasks_by_day(content, day):
     for i in range(len(content)):
-        if content[i]['data'] == str(fil_data):
+        if content[i]['data'] == str(day):
             print(f"{i + 1}. {content[i]['name']} - {content[i]['description']}")
 
 
@@ -51,15 +48,15 @@ def view_task_short(content):
     print("Список задач")
     for i in range(len(content)):
         print(
-            f"{i + 1}. {content['name']} - {content['description']} (до {content['data']})")
+            f"{i + 1}. {content[i]['name']} - {content[i]['description']} (до {content[i]['data']})")
 
 
 def add_task(content):
     name_task = input("Введите название задачи -> ")
     task_description = input("Введите описание задачи -> ")
-    task_date = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
+    task_date = validate_date(input("Введите дату окончанию задачи(YYYY-MM-DD) -> "))
     task = {
-        "status": False,
+        "completed": False,
         "name": name_task,
         "description": task_description,
         "data": task_date
@@ -97,7 +94,7 @@ def editing_task(content):
         if task_description != "":
             content[task_index]['description'] = task_description
         if task_date != "":
-            content[task_index]['data'] = task_date
+            content[task_index]['data'] = validate_date(task_date)
 
         save_content(content)
         print("Задача отредактирована")
@@ -105,20 +102,21 @@ def editing_task(content):
         print("Неверный номер задачи")
 
 
-def view_today(content):
+def view_tasks_for_today(content):
     today = datetime.now().date()
+
     print("Задачи на сегодня:")
-    filter_data(content, today)
+    get_tasks_by_day(content, today)
 
 
-def view_task_tomorrow(content):
+def view_tasks_for_tomorrow(content):
     tomorrow = datetime.now().date() + timedelta(days=1)
-    print(tomorrow)
+
     print("Задачи на завтра:")
-    filter_data(content, tomorrow)
+    get_tasks_by_day(content, tomorrow)
 
 
-def view_week(content):
+def view_task_for_week(content):
     week_start = datetime.now().date()
     week_end = week_start + timedelta(days=7)
     print("Задачи на неделю")
@@ -128,22 +126,24 @@ def view_week(content):
             print(f"{i + 1}. {content[i]['name']} - {content[i]['description']} (до {content[i]['data']})")
 
 
-def unfulfilled_tasks(content):
-    print("Невыполненные задачи")
-    for i in content:
-        if not i['status']:
-            print(f"{i['name']} - {i['description']} <- до {i['data']}")
+def show_tasks_by_completion(content, completion_state):
+    if completion_state:
+        print("Выполненные задачи")
+    else:
+        print("Невыполненные задачи")
 
-
-def completed_tasks(content):
-    print("Выполненные задачи")
     for i in content:
-        if i['status']:
+        if i["completed"] == completion_state:
             print(f"{i['name']} - {i['description']} <- дo {i['data']}")
 
 
+def validate_date(string):
+    return str(datetime.strptime(string, "%Y-%m-%d").date())
+
+check_dates(load_content())
+
 while True:
-    content = load_content()
+    tasks = load_content()
     print("Действие с файлом:")
     print("1. Добавить задачу")
     print("2. Удалить задачу")
@@ -156,24 +156,27 @@ while True:
     print("9. Задачи выполненные")
     print("0. Выход")
 
-    task_number = input("Введите номер действия -> ")
+    task_number = int(input("Введите номер действия -> "))
+    print()
 
-    if task_number == "1":
-        add_task(content)
-    elif task_number == "2":
-        delete_task(content)
-    elif task_number == "3":
-        editing_task(content)
-    elif task_number == "4":
-        view_task_long()
-    elif task_number == "5":
-        view_today(content)
-    elif task_number == "6":
-        view_task_tomorrow(content)
-    elif task_number == "7":
-        view_week(content)
-    elif task_number == "8":
-        unfulfilled_tasks(content)
+    if task_number == 1:
+        add_task(tasks)
+    elif task_number == 2:
+        delete_task(tasks)
+    elif task_number == 3:
+        editing_task(tasks)
+    elif task_number == 4:
+        view_task_long(tasks)
+    elif task_number == 5:
+        view_tasks_for_today(tasks)
+    elif task_number == 6:
+        view_tasks_for_tomorrow(tasks)
+    elif task_number == 7:
+        view_task_for_week(tasks)
+    elif task_number == 8:
+        show_tasks_by_completion(tasks, False)
+    elif task_number == 9:
+        show_tasks_by_completion(tasks, True)
 
     if task_number == "0":
         break
