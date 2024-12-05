@@ -1,0 +1,18 @@
+[
+  {
+    "status": true,
+    "name_and_description": [
+      "asdasddasd",
+      "asdasda"
+    ],
+    "data": "2010-01-03"
+  },
+  {
+    "status": false,
+    "name_and_description": [
+      "adsfhasdkfdhasf",
+      "sadfhadlshfadfsdf"
+    ],
+    "data": "2024-12-05"
+  }
+]
