@@ -1,34 +1,8 @@
 [
   {
-    "status": false,
-    "name_and_description": [
-      "foxnews",
-      "watch foxnews"
-    ],
-    "data": "2024-12-03"
-  },
-  {
-    "status": true,
-    "name_and_description": [
-      "cerega",
-      "cxodu v tualet"
-    ],
-    "data": "2020-01-01"
-  },
-  {
-    "status": false,
-    "name_and_description": [
-      "joj",
-      "lolpol"
-    ],
-    "data": "2024-12-03"
-  },
-  {
-    "status": false,
-    "name_and_description": [
-      "tomorrow",
-      "eat burger"
-    ],
-    "data": "2024-12-04"
+    "completed": false,
+    "name": "sdadasdasd",
+    "description": "asda",
+    "data": "2024-12-05"
   }
 ]
