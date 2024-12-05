@@ -9,10 +9,8 @@
   },
   {
     "status": false,
-    "name_and_description": [
-      "adsfhasdkfdhasf",
-      "sadfhadlshfadfsdf"
-    ],
+    "name": "adsfhasdkfdhasf",
+    "description": "sadfhadlshfadfsdf",
     "data": "2024-12-05"
   }
 ]

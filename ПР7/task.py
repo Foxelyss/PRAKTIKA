@@ -27,49 +27,54 @@ def check_dates(content):
 
 def view_task_long():
     task_number = 1
+    statuses = ["завершено", "в будущем"]
+
     with open("notebook.json", "r") as file:
         tasks = json.load(file)
+
     for i in tasks:
         print("\nНомер задачи <-", task_number)
         task_number += 1
-        print("Статус:", i['status'])  # поменять вывод статуса заместо False писать невыполнено, а на True выполнено
-        print("Название задачи:", i['name_and_description'][0])
-        print("Описание задачи:", i['name_and_description'][1])
-        print("Дата окончания задачи:", datetime.strftime(datetime.strptime(i['data'], "%Y-%m-%d").date(),"%Y.%m.%d"))
+        print("Статус:", statuses[int(i['status'])])
+        print("Название задачи:", i['name'])
+        print("Описание задачи:", i['description'])
+        print("Дата окончания задачи:", i['data'])
 
 
 def filter_data(content, fil_data):
     for i in range(len(content)):
         if content[i]['data'] == str(fil_data):
-            print(f"{i + 1}. {content[i]['name_and_description'][0]} - {content[i]['name_and_description'][1]}")
+            print(f"{i + 1}. {content[i]['name'][0]} - {content[i]['description'][1]}")
 
 
 def view_task_short(content):
-    print("\nСписок задач")
+    print("Список задач")
     for i in range(len(content)):
         print(
-            f"{i + 1}. {content[i]['name_and_description'][0]} - {content[i]['name_and_description'][1]} (до {content[i]['data']})")
+            f"{i + 1}. {content['name'][0]} - {content['description'][1]} (до {content['data']})")
 
 
 def add_task(content):
-    name_task = input("\nВведите название задачи -> ")
+    name_task = input("Введите название задачи -> ")
     description_task = input("Введите описание задачи -> ")
-    data_task = convert_date(input("Введите дату окончанию задачи(YYYY.MM.DD) -> "))
+    data_task = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
     task = {
         "status": False,
-        "name_and_description": [name_task, description_task],
+        "name":name_task,
+        "description": description_task,
         "data": data_task
     }
     content.append(task)
     save_content(content)
-    print("Задача добавленна")
+    print("Задача добавлена")
 
 
 def delete_task(content):
     view_task_short(content)
-    delet_task = int(input("Введите номер задачи для удаления -> ")) - 1
-    if 0 <= delet_task < len(content):
-        content.pop(delet_task)
+    delete_task = int(input("Введите номер задачи для удаления -> ")) - 1
+
+    if 0 <= delete_task < len(content):
+        content.pop(delete_task)
         save_content(content)
         print("Задача удалена")
     else:
@@ -78,17 +83,19 @@ def delete_task(content):
 
 def editing_task(content):
     view_task_short(content)
+
     index_task = int(input("Введите номер задачи для редактирования -> ")) - 1
+
     if 0 <= index_task < len(content):
         print("\nДля сохранения оставьте пустым")
-        name_task = input("Введите название задачи -> ")
+        task_name = input("Введите название задачи -> ")
         description_task = input("Введите описание задачи -> ")
-        data_task = convert_date(input("Введите дату окончанию задачи(YYYY.MM.DD) -> "))
+        data_task = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
 
-        if name_task != "":
-            content[index_task]['name_and_description'][0] = name_task
+        if task_name != "":
+            content[index_task]['description'] = task_name
         if description_task != "":
-            content[index_task]['name_and_description'][1] = description_task
+            content[index_task]['description'] = description_task
         if data_task != "":
             content[index_task]['data'] = data_task
 
@@ -100,47 +107,40 @@ def editing_task(content):
 
 def view_today(content):
     today = datetime.now().date()
-    print("\nЗадачи на сегодня:")
+    print("Задачи на сегодня:")
     filter_data(content, today)
 
 
 def view_task_tomorrow(content):
     tomorrow = datetime.now().date() + timedelta(days=1)
-    print("\nЗадачи на завтра:")
+    print(tomorrow)
+    print("Задачи на завтра:")
     filter_data(content, tomorrow)
 
 
 def view_week(content):
     week_start = datetime.now().date()
     week_end = week_start + timedelta(days=7)
-    print("\nЗадачи на неделю")
+    print("Задачи на неделю")
     for i in range(len(content)):
         data = datetime.strptime(content[i]['data'], "%Y-%m-%d").date()
         if week_start <= data <= week_end:
-            print(
-                f"{i + 1}. {content[i]['name_and_description'][0]} - {content[i]['name_and_description'][1]} (до {content[i]['data']})")
+            print(f"{i + 1}. {content[i]['name'][0]} - {content[i]['description'][1]} (до {content[i]['data']})")
 
 
 def unfulfilled_tasks(content):
-    print("\nНевыполненные задачи")
+    print("Невыполненные задачи")
     for i in content:
-        if i['status'] == False:
-            print(f"{i['name_and_description'][0]} - {i['name_and_description'][1]} <- до {i['data']}")
+        if not i['status']:
+            print(f"{i['name'][0]} - {i['description'][1]} <- до {i['data']}")
 
 
 def completed_tasks(content):
-    print("\nВыполненные задачи")
+    print("Выполненные задачи")
     for i in content:
-        if i['status'] == True:
-            print(f"{i['name_and_description'][0]} - {i['name_and_description'][1]} <- дo {i['data']}")
+        if i['status']:
+            print(f"{i['name'][0]} - {i['description'][1]} <- дo {i['data']}")
 
-
-def convert_date(string="1984.01.01"):
-    return str(datetime.strptime(string, "%Y.%m.%d").date())
-
-
-# -------main-------
-check_dates(load_content())
 while True:
     content = load_content()
     print("Действие с файлом:")
@@ -155,7 +155,7 @@ while True:
     print("9. Задачи выполненные")
     print("0. Выход")
 
-    task_number = input("Выедите номер действия -> ")
+    task_number = input("Введите номер действия -> ")
 
     if task_number == "1":
         add_task(content)
@@ -177,4 +177,5 @@ while True:
     if task_number == "0":
         break
 
-    input("\nНажмите enter для продолжения")
+    print()
+    input("Нажмите enter для продолжения")
