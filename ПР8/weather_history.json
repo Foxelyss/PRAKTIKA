@@ -1,0 +1,13 @@
+[
+  {
+    "date": "2024-12-05",
+    "default": "Томск",
+    "description": "небольшой снег",
+    "temp": -4.95,
+    "feels_like": -11.73,
+    "temp_min": -5.92,
+    "temp_max": -4.86,
+    "visibility": 3700,
+    "speed": 6
+  }
+]
