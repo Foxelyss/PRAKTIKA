@@ -157,7 +157,6 @@ while True:
     print("0. Выход")
 
     task_number = int(input("Введите номер действия -> "))
-    print()
 
     if task_number == 1:
         add_task(tasks)
