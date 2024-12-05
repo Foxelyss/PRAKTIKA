@@ -44,25 +44,25 @@ def view_task_long():
 def filter_data(content, fil_data):
     for i in range(len(content)):
         if content[i]['data'] == str(fil_data):
-            print(f"{i + 1}. {content[i]['name'][0]} - {content[i]['description'][1]}")
+            print(f"{i + 1}. {content[i]['name']} - {content[i]['description']}")
 
 
 def view_task_short(content):
     print("Список задач")
     for i in range(len(content)):
         print(
-            f"{i + 1}. {content['name'][0]} - {content['description'][1]} (до {content['data']})")
+            f"{i + 1}. {content['name']} - {content['description']} (до {content['data']})")
 
 
 def add_task(content):
     name_task = input("Введите название задачи -> ")
-    description_task = input("Введите описание задачи -> ")
-    data_task = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
+    task_description = input("Введите описание задачи -> ")
+    task_date = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
     task = {
         "status": False,
         "name":name_task,
-        "description": description_task,
-        "data": data_task
+        "description": task_description,
+        "data": task_date
     }
     content.append(task)
     save_content(content)
@@ -84,20 +84,20 @@ def delete_task(content):
 def editing_task(content):
     view_task_short(content)
 
-    index_task = int(input("Введите номер задачи для редактирования -> ")) - 1
+    task_index = int(input("Введите номер задачи для редактирования -> ")) - 1
 
-    if 0 <= index_task < len(content):
+    if 0 <= task_index < len(content):
         print("\nДля сохранения оставьте пустым")
         task_name = input("Введите название задачи -> ")
-        description_task = input("Введите описание задачи -> ")
-        data_task = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
+        task_description = input("Введите описание задачи -> ")
+        task_date = input("Введите дату окончанию задачи(YYYY-MM-DD) -> ")
 
         if task_name != "":
-            content[index_task]['description'] = task_name
-        if description_task != "":
-            content[index_task]['description'] = description_task
-        if data_task != "":
-            content[index_task]['data'] = data_task
+            content[task_index]['description'] = task_name
+        if task_description != "":
+            content[task_index]['description'] = task_description
+        if task_date != "":
+            content[task_index]['data'] = task_date
 
         save_content(content)
         print("Задача отредактирована")
@@ -125,21 +125,21 @@ def view_week(content):
     for i in range(len(content)):
         data = datetime.strptime(content[i]['data'], "%Y-%m-%d").date()
         if week_start <= data <= week_end:
-            print(f"{i + 1}. {content[i]['name'][0]} - {content[i]['description'][1]} (до {content[i]['data']})")
+            print(f"{i + 1}. {content[i]['name']} - {content[i]['description']} (до {content[i]['data']})")
 
 
 def unfulfilled_tasks(content):
     print("Невыполненные задачи")
     for i in content:
         if not i['status']:
-            print(f"{i['name'][0]} - {i['description'][1]} <- до {i['data']}")
+            print(f"{i['name']} - {i['description']} <- до {i['data']}")
 
 
 def completed_tasks(content):
     print("Выполненные задачи")
     for i in content:
         if i['status']:
-            print(f"{i['name'][0]} - {i['description'][1]} <- дo {i['data']}")
+            print(f"{i['name']} - {i['description']} <- дo {i['data']}")
 
 while True:
     content = load_content()
