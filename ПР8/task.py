@@ -25,7 +25,6 @@ def weather_city(location):
 
     save = data
     save["date"] = str(datetime.now().date())
-    save["default"] = city
 
     weathers.append(save)
 
@@ -46,8 +45,8 @@ def load_history():
 def get_default_city():
     history = load_history()
     if len(history) > 0:
-        if "default" in history[-1]:
-            return history[-1]["default"]
+        if "name" in history[-1]:
+            return history[-1]["name"]
 
     return "Томск"
 
