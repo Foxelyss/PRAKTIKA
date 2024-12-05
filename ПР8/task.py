@@ -4,10 +4,10 @@ from datetime import datetime
 
 API_key = '***REMOVED***'
 
+current_date = datetime.now().date()
 
 def weather_city(lat_lon):
     weathers = load_history()
-    current_date = datetime.now().date()
 
     for x in weathers:
         if x["date"] == str(current_date):
@@ -27,20 +27,22 @@ def weather_city(lat_lon):
 
 def location_lat_lon_city(city):
     try:
-        with open("city_lat_lon.json", "r") as file:
+        with open("city_lat_lon.json", "r", encoding='utf8') as file:
             meanings = json.load(file)
     except:
         meanings = []
 
     for i in range(len(meanings)):
         if meanings[i]['name'] == city:
-            return meanings[i]['lat_lon']
+            return tuple(meanings[i]['lat_lon'])
 
     response = requests.get(f'http://api.openweathermap.org/geo/1.0/direct?q={city}&appid={API_key}').json()
+
     lat = response[0]['lat']
     lon = response[0]['lon']
     json_dump = {"name": city, "lat_lon": [lat, lon]}
     meanings.append(json_dump)
+
     with open("city_lat_lon.json", "w", encoding='utf8') as file:
         json.dump(meanings, file, indent=4, ensure_ascii=False)
     return lat, lon
@@ -71,10 +73,11 @@ print("Температура максимальная:", mean['main']['temp_max
 print("Видимость (м):", mean['visibility'])
 print("Скорость ветра (м/с):", mean['wind']['speed'])
 
-save = mean
-save["date"]: str(datetime.now().date())
-save["default"]: city
+if history[-1]["date"] != str(current_date):
+    save = mean
+    save["date"]: str(datetime.now().date())
+    save["default"]: city
 
-history.append(save)
-with open("weather_history.json", "w", encoding='utf8') as file:
-    json.dump(history, file, indent=2, ensure_ascii=False)
+    history.append(save)
+    with open("weather_history.json", "w", encoding='utf8') as file:
+        json.dump(history, file, indent=2, ensure_ascii=False)
