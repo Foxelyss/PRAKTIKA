@@ -10,7 +10,7 @@ def weather_city(lat_lon):
     weathers = load_history()
 
     for x in weathers:
-        if x["date"] == str(current_date):
+        if x["date"] == str(current_date) and x["coord"] == lat_lon:
             return x
 
     base_url = 'https://api.openweathermap.org/data/2.5/weather'
