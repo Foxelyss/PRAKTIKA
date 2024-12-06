@@ -53,7 +53,7 @@ def get_default_city():
 
 print('Введите город или Enter(если вы вводили прошлый раз город, то он будет по умолчанию)')
 
-city = input().capitalize()
+city = input().lower()
 if len(city) < 1:
     city = get_default_city()
 
