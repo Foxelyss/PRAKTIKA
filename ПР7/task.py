@@ -15,12 +15,10 @@ def save_content(content):
         json.dump(content, file, indent=2)
 
 
-def check_dates(content):
+def check_dates_for_completion(content):
     n = 0
     for i in content:
-        data = datetime.strptime(i['data'], "%Y-%m-%d").date()
-        if data < datetime.now().date():
-            content[n]["completed"] = True
+        content[n]["completed"] = check_date_completion(i['date'])
         n += 1
     save_content(content)
 
@@ -35,12 +33,12 @@ def view_task_long(tasks):
         print("Статус:", statuses[int(i["completed"])])
         print("Название задачи:", i['name'])
         print("Описание задачи:", i['description'])
-        print("Дата окончания задачи:", i['data'])
+        print("Дата окончания задачи:", i['date'])
 
 
 def get_tasks_by_day(content, day):
     for i in range(len(content)):
-        if content[i]['data'] == str(day):
+        if content[i]['date'] == str(day):
             print(f"{i + 1}. {content[i]['name']} - {content[i]['description']}")
 
 
@@ -48,7 +46,7 @@ def view_task_short(content):
     print("Список задач")
     for i in range(len(content)):
         print(
-            f"{i + 1}. {content[i]['name']} - {content[i]['description']} (до {content[i]['data']})")
+            f"{i + 1}. {content[i]['name']} - {content[i]['description']} (до {content[i]['date']})")
 
 
 def add_task(content):
@@ -56,10 +54,10 @@ def add_task(content):
     task_description = input("Введите описание задачи -> ")
     task_date = validate_date(input("Введите дату окончанию задачи(YYYY-MM-DD) -> "))
     task = {
-        "completed": False,
+        "completed": check_date_completion(task_date),
         "name": name_task,
         "description": task_description,
-        "data": task_date
+        'date': task_date
     }
     content.append(task)
     save_content(content)
@@ -94,7 +92,8 @@ def editing_task(content):
         if task_description != "":
             content[task_index]['description'] = task_description
         if task_date != "":
-            content[task_index]['data'] = validate_date(task_date)
+            content[task_index]['date'] = validate_date(task_date)
+            content[task_index]['completed'] = check_date_completion(task_date)
 
         save_content(content)
         print("Задача отредактирована")
@@ -121,9 +120,9 @@ def view_task_for_week(content):
     week_end = week_start + timedelta(days=7)
     print("Задачи на неделю")
     for i in range(len(content)):
-        data = datetime.strptime(content[i]['data'], "%Y-%m-%d").date()
+        data = datetime.strptime(content[i]['date'], "%Y-%m-%d").date()
         if week_start <= data <= week_end:
-            print(f"{i + 1}. {content[i]['name']} - {content[i]['description']} (до {content[i]['data']})")
+            print(f"{i + 1}. {content[i]['name']} - {content[i]['description']} (до {content[i]['date']})")
 
 
 def show_tasks_by_completion(content, completion_state):
@@ -134,13 +133,21 @@ def show_tasks_by_completion(content, completion_state):
 
     for i in content:
         if i["completed"] == completion_state:
-            print(f"{i['name']} - {i['description']} <- дo {i['data']}")
+            print(f"{i['name']} - {i['description']} <- дo {i['date']}")
 
 
 def validate_date(string):
     return str(datetime.strptime(string, "%Y-%m-%d").date())
 
-check_dates(load_content())
+
+def check_date_completion(date_to_check):
+    date = datetime.strptime(date_to_check, "%Y-%m-%d").date()
+    if date < datetime.now().date():
+        return True
+    return False
+
+
+check_dates_for_completion(load_content())
 
 while True:
     tasks = load_content()
