@@ -25,12 +25,11 @@ def check_dates_for_completion(content):
 
 def view_task_long(tasks):
     task_number = 1
-    statuses = ["завершено", "в будущем"]
 
     for i in tasks:
         print("\nНомер задачи <-", task_number)
         task_number += 1
-        print("Статус:", statuses[int(i["completed"])])
+        print("Статус:", "завершено" if i["completed"] else "в будущем")
         print("Название задачи:", i['name'])
         print("Описание задачи:", i['description'])
         print("Дата окончания задачи:", i['date'])
