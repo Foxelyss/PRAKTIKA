@@ -7,17 +7,17 @@ API_key = '***REMOVED***'
 current_date = datetime.now().date()
 
 
-def weather_city(location):
+def weather_city(city):
     weathers = load_history()
 
     for x in weathers:
-        if x["date"] == str(current_date) and x["name"] == location:
+        if x["date"] == str(current_date) and x["name"] == city:
             return x
 
     base_url = 'https://api.openweathermap.org/data/2.5/weather'
     params = {
         'appid': API_key,
-        'q': location,
+        'q': city,
         'units': 'metric',
         'lang': 'ru'}
     response = requests.get(base_url, params=params)
@@ -53,7 +53,7 @@ def get_default_city():
 
 print('Введите город или Enter(если вы вводили прошлый раз город, то он будет по умолчанию)')
 
-city = input().lower()
+city = input().title()
 if len(city) < 1:
     city = get_default_city()
 
