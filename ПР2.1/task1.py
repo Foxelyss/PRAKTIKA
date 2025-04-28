@@ -8,3 +8,13 @@
 # Вывод:
 # 4
 
+J = input()
+S = input()
+
+jewels = 0
+
+for x in S:
+    if x in J:
+        jewels += 1
+
+print(jewels)
