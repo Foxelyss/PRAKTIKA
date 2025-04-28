@@ -18,3 +18,29 @@
 # [2,6]
 # ]
 
+candidates = list(map(int,input("Введите числа через пробел: ").split()))
+target = int(input())
+
+combinations = []
+
+for x in range(len(candidates)):
+    combination = [candidates[x]]
+    number = candidates[x]
+
+    for y in range(len(candidates)):
+        print(number,candidates[y])
+        if y != x and (number + candidates[y]) <= target:
+            combination.append(candidates[y])
+            number += candidates[y]
+        elif number >= target:
+            break
+
+    combination.sort()
+
+    if number != target:
+        continue
+
+    if combination not in combinations:
+        combinations.append(combination)
+
+print(combinations)
