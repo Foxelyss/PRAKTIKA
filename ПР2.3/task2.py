@@ -3,7 +3,7 @@
 
 
 class Worker:
-    def __init__(self, name: str, surname: str, rate: int, days: int):
+    def __init__(self, name: str, surname: str, rate: float, days: int):
         self.__name = name
         self.__surname = surname
         self.__rate = rate
