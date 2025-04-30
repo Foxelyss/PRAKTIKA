@@ -4,7 +4,7 @@
 # это произведение ставки rate на количество отработанных дней days;
 
 class Worker:
-    def __init__(self, name: str, surname: str, rate: int, days: int):
+    def __init__(self, name: str, surname: str, rate: float, days: int):
         self.name = name
         self.surname = surname
         self.rate = rate
