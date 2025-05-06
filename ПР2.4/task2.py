@@ -143,8 +143,9 @@ def update_cocktail_alcohol_percentage(cocktail_id):
     cursor.execute("""
     update cocktails
     set alcohol_percentage = round((
-    select sum(drinks.volume * alcohol_percentage) / 
-    (select sum(ingredients.volume) + (select sum(drinks.volume) from drinks where cocktail = ?) from ingredients where cocktail = ?) from drinks
+    select COALESCE(sum(drinks.volume * alcohol_percentage),0) / 
+    (select COALESCE(sum(ingredients.volume), 0) + (select COALESCE(sum(drinks.volume), 0) from drinks where cocktail = ?) 
+    from ingredients where cocktail = ?) from drinks
     inner join drink on drink.id = drink
     where cocktail = ?
     ), 2)
