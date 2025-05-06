@@ -111,8 +111,10 @@ def send_task(message: telebot.types.Message):
 @bot.message_handler(commands=['code'])
 def send_code_from_user(message: telebot.types.Message):
     code = message.text.replace("/code ", "", 1).replace("\\", "\\\\").replace("`", r"\`")
+
     if len(code.split()) < 2:
         bot.reply_to(message, "Нужно указать не только язык программирования!")
+        return
 
     message_body = "```"
     message_body += code
@@ -134,6 +136,8 @@ def make_suslik_meme(message: telebot.types.Message):
 
     if len(message_parts) != 4:
         bot.reply_to(message, "Нужно 3 строки с текстом")
+        return
+
     image = Image.open("suslik.jpg")
 
     draw = ImageDraw.Draw(image)
