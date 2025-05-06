@@ -43,30 +43,26 @@ con.commit()
 class Student:
     @staticmethod
     def from_result_set(info, grades=None):
-        average = None
-        if len(info) == 6:
-            average = info[5]
-
-        return Student(info[0], info[1], info[2], info[3], info[4], grades, average)
+        return Student(info[0], info[1], info[2], info[3], info[4], grades, info[5] if len(info) >= 6 else None)
 
     @staticmethod
     def from_list_result_set_without_grades(lst):
         return list(map(lambda x: Student.from_result_set(x), lst))
 
-    def __init__(self, student_id: int, name: str, surname: str, lastname: str, group: int, grades: [int],
-                 average_grade: int):
+    def __init__(self, student_id: int, name: str, surname: str, lastname: str, group: int, grades: [int] = None,
+                 average_grade: int = None):
         self.id = student_id
         self.name = name
         self.surname = surname
         self.lastname = lastname
         self.group = group
+        self.average = average_grade
 
         if grades is not None:
-            if len(grades) != 4:
-                raise ValueError("Оценок должно быть ровно 4!")
-                
-        self.grades = grades
-        self.average = average_grade
+            self.grades = grades
+            self.validate_grades()
+
+            self.calculate_average_grade()
 
     def print_information(self):
         print(f"№: {self.id}, ФИО: {self.name} {self.surname} {self.lastname}, Группа: {self.group}")
@@ -75,6 +71,22 @@ class Student:
             print("Средний балл:", self.average)
         if self.grades is not None:
             print("Оценки:", *self.grades)
+
+    def calculate_average_grade(self):
+        self.average = 0
+
+        for x in self.grades:
+            self.average += x
+
+        self.average /= len(self.grades)
+
+    def validate_grades(self):
+        if len(self.grades) != 4:
+            raise ValueError("Оценок должно быть ровно 4!")
+
+        for x in self.grades:
+            if x not in (2, 3, 4, 5):
+                raise ValueError("Оценки должны быть!")
 
 
 def add_student(student):
@@ -94,21 +106,24 @@ def add_student(student):
 
 def view_all():
     cursor = con.cursor()
-    cursor.execute("SELECT * FROM student")
+    cursor.execute("select * FROM student")
     rows = Student.from_list_result_set_without_grades(cursor.fetchall())
 
     print("\nСписок всех студентов:")
     if len(rows) == 0:
         print("Пусто")
-    else:
-        for x in rows:
-            x.print_information()
+        return
+
+    for x in rows:
+        x.print_information()
 
 
-def view_student(id):
+def view_student():
     cursor = con.cursor()
 
-    cursor.execute("SELECT * FROM student WHERE id=?", (id,))
+    id = int(input("Номер студента для просмотра:"))
+
+    cursor.execute("select * FROM student WHERE id=?", (id,))
 
     student = list(cursor.fetchone())
 
@@ -116,11 +131,11 @@ def view_student(id):
         print("Студент не найден")
         return
 
-    cursor.execute("SELECT AVG(grade) FROM grades WHERE student_id=?", (id,))
+    cursor.execute("select AVG(grade) FROM grades WHERE student_id=?", (id,))
     avg_grade = cursor.fetchone()[0]
     student.append(avg_grade)
 
-    cursor.execute("SELECT grade FROM grades WHERE student_id=?", (id,))
+    cursor.execute("select grade FROM grades WHERE student_id=?", (id,))
     grades_res = cursor.fetchall()
 
     grades = tuple(zip(*grades_res))[0]
@@ -131,45 +146,68 @@ def view_student(id):
     student.print_information()
 
 
-def edit_student(id):
+def edit_student():
     cursor = con.cursor()
 
-    cursor.execute("SELECT * FROM student WHERE id=?", (id,))
+    id = int(input("Номер студента для редактирования:"))
+
+    cursor.execute("select * FROM student WHERE id=?", (id,))
     student = cursor.fetchone()
 
     if not student:
         print("Студент не найден")
         return
 
-    student = Student.from_result_set(student)
+    cursor.execute("select id, grade from grades where student_id=?", (id,))
+    grades_id, grades = tuple(zip(*cursor.fetchall()))
+
+    student = Student.from_result_set(student, grades)
 
     print("Изменяемый студент")
     student.print_information()
 
-    print("Пропустите значения если не хотите их изменения")
+    print("(Пропустите значения если не хотите их изменения)")
 
     new_name = input("Новое имя: ")
     new_surname = input("Новая фамилия: ")
     new_lastname = input("Новое отчество: ")
     new_group = input("Новая группа: ")
+    new_grades = input("Оценки (через пробел):")
+
+    try:
+        new_grades = list(map(int, new_grades.split()))
+        if new_group != "":
+            int(new_group)
+    except:
+        print("Введены неправильные данные группы и/или оценках")
+        return
+
+    if new_grades != "":
+        if len(new_grades) ==4 or all(x in (2,3,4,5) for x in new_grades):
+            cursor.executemany("update grades set grade=? where id=?", zip(new_grades,grades_id))
+        else:
+            print("Оценок должно быть 4 и они должны быть цифрами!")
+            return
 
     if new_name != "":
-        cursor.execute("UPDATE student SET name=? WHERE id=?", (new_name, id))
+        cursor.execute("update student set name=? where id=?", (new_name, id))
     if new_surname != "":
-        cursor.execute("UPDATE student SET surname=? WHERE id=?", (new_surname, id))
+        cursor.execute("update student set surname=? where id=?", (new_surname, id))
     if new_lastname != "":
-        cursor.execute("UPDATE student SET lastname=? WHERE id=?", (new_lastname, id))
+        cursor.execute("update student set lastname=? where id=?", (new_lastname, id))
     if new_group != "":
-        cursor.execute("UPDATE student SET group_number=? WHERE id=?", (int(new_group), id))
+        cursor.execute("update student set group_number=? where id=?", (int(new_group), id))
 
     print("Применено!")
     con.commit()
 
 
-def delete_student(id):
+def delete_student():
     cursor = con.cursor()
 
-    cursor.execute("DELETE FROM student WHERE id=?", (id,))
+    id = int(input("Номер студента для удаления:"))
+
+    cursor.execute("delete FROM student WHERE id=?", (id,))
 
     if cursor.rowcount != 0:
         print("Удалено!")
@@ -178,11 +216,14 @@ def delete_student(id):
     con.commit()
 
 
-def group_avg_grade(group_number):
+def group_avg_grade():
     cursor = con.cursor()
+
+    group_number = int(input("Введите номер группы: "))
+
     cursor.execute(
         """
-        SELECT student.id, student.name, student.surname, student.lastname, student.group_number, AVG(grade) FROM student 
+        select student.id, student.name, student.surname, student.lastname, student.group_number, AVG(grade) FROM student 
         inner JOIN grades ON student.id = grades.student_id
         where group_number = ? 
         group by student.id 
@@ -191,6 +232,11 @@ def group_avg_grade(group_number):
     students_of_group = Student.from_list_result_set_without_grades(cursor.fetchall())
 
     print("\nСредние оценки в группе:")
+
+    if len(students_of_group) == 0:
+        print("Пусто")
+        return
+
     for x in students_of_group:
         x.print_information()
 
@@ -205,7 +251,11 @@ while True:
     print("6. Средние оценки по группам")
     print("0. Выйти из программы")
 
-    choice = int(input("Введите номер действия:"))
+    try:
+        choice = int(input("Введите номер действия:"))
+    except:
+        print("Введите номер!")
+        continue
 
     if choice == 1:
         name = input("Имя:")
@@ -219,27 +269,17 @@ while True:
             add_student(student)
         except ValueError as err:
             print(err)
-        except sqlite3.IntegrityError:
-            print("Оценки должны быть от 2 до 5")
 
     elif choice == 2:
         view_all()
     elif choice == 3:
-        id = int(input("Номер студента для просмотра:"))
-
-        view_student(id)
+        view_student()
     elif choice == 4:
-        id = int(input("Номер студента для редактирования:"))
-
-        edit_student(id)
+        edit_student()
     elif choice == 5:
-        id = int(input("Номер студента для удаления:"))
-
-        delete_student(id)
+        delete_student()
     elif choice == 6:
-        group_number = int(input("Введите номер группы: "))
-
-        group_avg_grade(group_number)
+        group_avg_grade()
     elif choice == 0:
         break
     else:
