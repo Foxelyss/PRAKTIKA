@@ -83,22 +83,33 @@ def measure_usage():
     disk_usage = sum(used_storage) / sum(all_storage) * 100
     return cpu_usage, ram_usage, round(disk_usage, 1)
 
+def monitor_usage():
+    cpu, ram, disk = measure_usage()
+
+    print(f"Расход ЦПУ: {cpu}%, ОЗУ: {ram}% Диска: {disk}%")
+    save_stats(cpu, ram, disk)
 
 while True:
-    print("\nМеню:")
+    print("Меню:")
     print("1. Посмотреть и сохранить")
-    print("2. Вывести всех студентов")
+    print("2. Вывести всю статистику")
     print("0. Выйти из программы")
 
-    choice = int(input("\nВведите номер действия:\n"))
+    try:
+        choice = int(input("Введите номер действия:"))
+    except:
+        print("Введите номер!")
+        continue
 
     if choice == 1:
-        cpu, ram, disk = measure_usage()
-
-        print(f"Расход ЦПУ: {cpu}%, ОЗУ: {ram}% Диска: {disk}%")
+        monitor_usage()
     elif choice == 2:
         get_stats()
     elif choice == 0:
         break
     else:
         print("Неверный выбор")
+        continue
+
+    input("Нажмите enter для продолжения...")
+    print()
