@@ -65,7 +65,7 @@ class Student:
             self.calculate_average_grade()
 
     def print_information(self):
-        print(f"№: {self.id}, ФИО: {self.name} {self.surname} {self.lastname}, Группа: {self.group}")
+        print(f"№: {self.id}; ФИО: {self.name} {self.surname} {self.lastname}; Группа: {self.group}")
 
         if self.average is not None:
             print("Средний балл:", self.average)
