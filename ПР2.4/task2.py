@@ -76,21 +76,6 @@ def add_component_to_cocktail(is_ingredient=False):
     print("Напиток добавлен в коктейль.")
     con.commit()
 
-
-def add_ingredient_to_cocktail():
-    cursor = con.cursor()
-    cocktail_id = int(input("Введите номер коктейля: "))
-    ingredient_id = int(input("Введите номер ингредиента: "))
-    volume = float(input("Введите объем ингредиента в коктейле: "))
-
-    cursor.execute("insert INTO ingredients values (null, ?, ?, ?)",
-                   (cocktail_id, ingredient_id, volume))
-
-    print("Ингредиент добавлен в коктейль.")
-    con.commit()
-
-    update_cocktail_alcohol_percentage(cursor.lastrowid)
-
 def remove_component_from_cocktail(is_ingredient=False):
     cursor = con.cursor()
     cocktail_id = int(input("Введите номер коктейля: "))
@@ -100,7 +85,7 @@ def remove_component_from_cocktail(is_ingredient=False):
     if is_ingredient:
         table = "ingredient"
 
-    cursor.execute(f"delete from {table}s where cocktail=? {table}=?",
+    cursor.execute(f"delete from {table}s where cocktail=? and {table}=?",
                    (cocktail_id, component_id))
 
     print("Компонент удалён из коктейля.")
