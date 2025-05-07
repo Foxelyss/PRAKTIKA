@@ -22,7 +22,8 @@ create_table = """
 create table if not exists drink(
 id integer primary key,
 name char(26) not null,
-alcohol_percentage float(3) not null
+alcohol_percentage float(3) not null,
+price_for_litre float(2) not null
 );
 
 create table if not exists ingredient(
@@ -51,22 +52,40 @@ drink int references drink(id),
 volume float(3) not null
 );
 
-create table if not exists supply(
+create table if not exists supply_ingredient(
 id integer primary key,
 supply_date date not null,
 ingredient int references ingredient(id),
-drink int references drinks(id),
 volume float(3) not null,
-quantity int not null
+quantity int not null,
+price float(2) not null
 );
 
-create table if not exists sells(
+create table if not exists supply_drink(
+id integer primary key,
+supply_date date not null,
+drink int references drinks(id),
+volume float(3) not null,
+quantity int not null,
+price float(2) not null
+);
+
+create table if not exists sells_drink(
 id integer primary key,
 sell_date date not null,
 cocktail int references cocktails(id),
-drink int references drinks(id),
 volume float(3) not null,
-quantity int not null
+quantity int not null,
+price float(2) not null
+);
+
+create table if not exists sells_cocktail(
+id integer primary key,
+sell_date date not null,
+cocktail int references cocktails(id),
+volume float(3) not null,
+quantity int not null,
+price float(2) not null
 );
 """
 
@@ -78,9 +97,10 @@ def add_drink():
     cursor = con.cursor()
     name = input("Введите название напитка: ")
     alcohol_percentage = int(input("Введите крепкость напитка: ")) / 100
+    price = float(input("Цена за литр: "))
 
-    cursor.execute("insert INTO drink values (null, ?, ?)",
-                   (name, alcohol_percentage))
+    cursor.execute("insert INTO drink values (null, ?, ?, ?)",
+                   (name, alcohol_percentage, price))
 
     con.commit()
     print("Напиток добавлен.")
@@ -128,7 +148,7 @@ def add_ingredient_to_cocktail():
     ingredient_id = int(input("Введите номер ингредиента: "))
     volume = float(input("Введите объем ингредиента в коктейле: "))
 
-    cursor.execute("insert INTO ingredients (cocktail, ingredient, volume) values (?, ?, ?)",
+    cursor.execute("insert INTO ingredients values (null, ?, ?, ?)",
                    (cocktail_id, ingredient_id, volume))
 
     print("Ингредиент добавлен в коктейль.")
@@ -160,8 +180,11 @@ def sell_drink():
     cursor = con.cursor()
     drink_id = int(input("Введите номер напитка: "))
     quantity = int(input("Введите количество: "))
+    volume = float(input("Введите количество: "))
+    price = float(input("Введите сумму закупки: "))
 
-    cursor.execute("insert INTO sells (sell_date, drink, quantity) values (date(), ?, ?)", (drink_id, quantity))
+    cursor.execute("insert INTO sells_drink values (null, date(), ?, ?, ?, ?)",
+                   (drink_id, volume, quantity, price))
 
     con.commit()
     print("Продажа успешна")
@@ -171,8 +194,11 @@ def sell_cocktail():
     cursor = con.cursor()
     cocktail_id = int(input("Введите номер коктейля: "))
     quantity = int(input("Введите количество: "))
+    volume = float(input("Введите количество: "))
+    price = float(input("Введите сумму закупки: "))
 
-    cursor.execute("insert INTO sells (sell_date, cocktail, quantity) values (date(), ?, ?)", (cocktail_id, quantity))
+    cursor.execute("insert INTO sells_cocktail values (null, date(), ?, ?, ?, ?)",
+                   (cocktail_id, volume, quantity, price))
 
     con.commit()
     print("Продажа успешна")
@@ -183,8 +209,9 @@ def replenish_ingredient_stock():
     ingredient_id = int(input("Введите ID ингредиента: "))
     quantity = float(input("Введите количество пополнения: "))
     volume = float(input("Введите объем(литры) пополнения: "))
-    cursor.execute("insert INTO supply values (null, date(), ?, null, ?, ?)",
-                   (ingredient_id, volume, quantity))
+    price = float(input("Введите сумму закупки: "))
+    cursor.execute("insert INTO supply_ingredient values (null, date(), ?, ?, ?, ?)",
+                   (ingredient_id, volume, quantity, price))
     con.commit()
     print("Запас ингредиента пополнен")
 
@@ -194,7 +221,9 @@ def replenish_drink_stock():
     drink_id = int(input("Введите номер напитка: "))
     quantity = float(input("Введите количество пополнения: "))
     volume = float(input("Введите объем(литры) пополнения: "))
-    cursor.execute("insert INTO supply values (null, date(), null, ?, ?, ?)", (drink_id, volume, quantity))
+    price = float(input("Введите сумму закупки: "))
+    cursor.execute("insert INTO supply_drink values (null, date(), ?, ?, ?)",
+                   (drink_id, volume, quantity, price))
     con.commit()
     print("Запас напитка пополнен")
 
@@ -210,7 +239,7 @@ def list_drinks():
         return
 
     for drink in drinks:
-        print(f"№: {drink[0]}; Название: {drink[1]}; Крепость: {drink[2]}; Объем: {drink[3]}")
+        print(f"№: {drink[0]}; Название: {drink[1]}; Крепость: {drink[2]}; Цена за литр: {drink[3]}")
 
 
 def list_ingredients():
