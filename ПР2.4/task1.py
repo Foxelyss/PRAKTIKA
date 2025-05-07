@@ -204,6 +204,7 @@ def delete_student():
     id = int(input("Номер студента для удаления:"))
 
     cursor.execute("delete FROM student WHERE id=?", (id,))
+    cursor.execute("delete FROM grades WHERE student_id=?", (id,))
 
     if cursor.rowcount != 0:
         print("Удалено!")
