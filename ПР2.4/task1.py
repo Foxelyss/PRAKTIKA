@@ -57,9 +57,9 @@ class Student:
         self.lastname = lastname
         self.group = group
         self.average = average_grade
+        self.grades = grades
 
         if grades is not None:
-            self.grades = grades
             self.validate_grades()
 
             self.calculate_average_grade()
@@ -125,15 +125,11 @@ def view_student():
 
     cursor.execute("select * FROM student WHERE id=?", (id,))
 
-    student = list(cursor.fetchone())
+    student = cursor.fetchone()
 
     if not student:
         print("Студент не найден")
         return
-
-    cursor.execute("select AVG(grade) FROM grades WHERE student_id=?", (id,))
-    avg_grade = cursor.fetchone()[0]
-    student.append(avg_grade)
 
     cursor.execute("select grade FROM grades WHERE student_id=?", (id,))
     grades_res = cursor.fetchall()
@@ -256,6 +252,8 @@ while True:
     except:
         print("Введите номер!")
         continue
+
+    print()
 
     if choice == 1:
         name = input("Имя:")
