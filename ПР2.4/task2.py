@@ -31,8 +31,7 @@ def add_drink():
     alcohol_percentage = int(input("Введите крепкость напитка: ")) / 100
     price = float(input("Цена за литр: "))
 
-    cursor.execute("insert INTO drink values (null, ?, ?, ?)",
-                   (name, alcohol_percentage, price))
+    cursor.execute("insert INTO drink values (null, ?, ?, ?)",(name, alcohol_percentage, price))
 
     con.commit()
     print("Напиток добавлен.")
@@ -61,13 +60,17 @@ def add_cocktail():
     print("Коктейль добавлен.")
 
 
-def add_drink_to_cocktail():
+def add_component_to_cocktail(is_ingredient=False):
     cursor = con.cursor()
     cocktail_id = int(input("Введите номер коктейля: "))
-    drink_id = int(input("Введите номер напитка: "))
+    component_id = int(input("Введите номер напитка: "))
     volume = float(input("Введите объем напитка в коктейле: "))
 
-    cursor.execute("insert INTO drinks values (null, ?, ?, ?)", (cocktail_id, drink_id, volume))
+    table = "drink"
+    if is_ingredient:
+        table = "ingredient"
+
+    cursor.execute(f"insert INTO {table}s values (null, ?, ?, ?)", (cocktail_id, component_id, volume))
 
     update_cocktail_alcohol_percentage(cursor.lastrowid)
     print("Напиток добавлен в коктейль.")
@@ -88,6 +91,22 @@ def add_ingredient_to_cocktail():
 
     update_cocktail_alcohol_percentage(cursor.lastrowid)
 
+def remove_component_from_cocktail(is_ingredient=False):
+    cursor = con.cursor()
+    cocktail_id = int(input("Введите номер коктейля: "))
+    component_id = int(input("Введите номер компонента: "))
+
+    table = "drink"
+    if is_ingredient:
+        table = "ingredient"
+
+    cursor.execute(f"delete from {table}s where cocktail=? {table}=?",
+                   (cocktail_id, component_id))
+
+    print("Компонент удалён из коктейля.")
+    con.commit()
+
+    update_cocktail_alcohol_percentage(cursor.lastrowid)
 
 def update_cocktail_alcohol_percentage(cocktail_id):
     cursor = con.cursor()
@@ -108,56 +127,40 @@ def update_cocktail_alcohol_percentage(cocktail_id):
     print("Крепкость обновлена!")
 
 
-def sell_drink():
+def sell_drink_or_cocktail(is_cocktail=False):
     cursor = con.cursor()
-    drink_id = int(input("Введите номер напитка: "))
+    drink_id = int(input("Введите номер: "))
     quantity = int(input("Введите количество: "))
     volume = float(input("Введите количество: "))
     price = float(input("Введите сумму закупки: "))
 
-    cursor.execute("insert INTO sells_drink values (null, date(), ?, ?, ?, ?)",
+    table = "drink"
+    if is_cocktail:
+        table = "cocktail"
+
+    cursor.execute(f"insert INTO sells_{table} values (null, date(), ?, ?, ?, ?)",
                    (drink_id, volume, quantity, price))
 
     con.commit()
     print("Продажа успешна")
 
 
-def sell_cocktail():
-    cursor = con.cursor()
-    cocktail_id = int(input("Введите номер коктейля: "))
-    quantity = int(input("Введите количество: "))
-    volume = float(input("Введите количество: "))
-    price = float(input("Введите сумму закупки: "))
-
-    cursor.execute("insert INTO sells_cocktail values (null, date(), ?, ?, ?, ?)",
-                   (cocktail_id, volume, quantity, price))
-
-    con.commit()
-    print("Продажа успешна")
-
-
-def replenish_ingredient_stock():
+def replenish_ingredient_stock(is_ingredient=False):
     cursor = con.cursor()
     ingredient_id = int(input("Введите ID ингредиента: "))
     quantity = float(input("Введите количество пополнения: "))
     volume = float(input("Введите объем(литры) пополнения: "))
     price = float(input("Введите сумму закупки: "))
-    cursor.execute("insert INTO supply_ingredient values (null, date(), ?, ?, ?, ?)",
+
+    table = "drink"
+    if is_ingredient:
+        table = "ingredient"
+
+    cursor.execute(f"insert INTO supply_{table} values (null, date(), ?, ?, ?, ?)",
                    (ingredient_id, volume, quantity, price))
     con.commit()
     print("Запас ингредиента пополнен")
 
-
-def replenish_drink_stock():
-    cursor = con.cursor()
-    drink_id = int(input("Введите номер напитка: "))
-    quantity = float(input("Введите количество пополнения: "))
-    volume = float(input("Введите объем(литры) пополнения: "))
-    price = float(input("Введите сумму закупки: "))
-    cursor.execute("insert INTO supply_drink values (null, date(), ?, ?, ?)",
-                   (drink_id, volume, quantity, price))
-    con.commit()
-    print("Запас напитка пополнен")
 
 
 def list_drinks():
@@ -202,6 +205,32 @@ def list_cocktails():
     for cocktail in cocktails:
         print(f"№: {cocktail[0]}; Название: {cocktail[1]}; Крепкость: {cocktail[2]}; Цена: {cocktail[3]}")
 
+        print("Ингредиенты в составе:")
+
+        ingredients = cursor.execute("""
+        select ingredient.name, volume from ingredients
+        inner join ingredient on ingredient.id = ingredient
+        where ingredients.cocktail = ?
+        """,(cocktail[0],)).fetchall()
+        if not ingredients:
+            print("Пусто")
+        else:
+            for x in ingredients:
+                print(f"{x[0]} в объёме {x[1]}")
+
+        print("\nНапитки в составе:")
+
+        drinks = cursor.execute("""
+        select drink.name , alcohol_percentage, volume FROM  drinks
+        inner join drink on drinks.drink = drink.id
+        where drinks.cocktail = ?
+        """, (cocktail[0],)).fetchall()
+        if not drinks:
+            print("Пусто")
+        else:
+            for x in drinks:
+                print(f"{x[0]} в объёме {x[1]}")
+
 
 while True:
     print("Выберите действие:")
@@ -210,14 +239,16 @@ while True:
     print("3. Добавить коктейль")
     print("4. Добавить напиток в коктейль")
     print("5. Добавить ингредиент в коктейль")
-    print("6. Продать напиток")
-    print("7. Продать коктейль")
-    print("8. Пополнить запас ингредиента")
-    print("9. Пополнить запас напитков")
-    print("10. Список напитков")
-    print("11. Список ингредиентов")
-    print("12. Список коктейлей")
-    print("13. Выход")
+    print("6. Убрать напиток из коктейля")
+    print("7. Убрать ингредиент из коктейля")
+    print("8. Продать напиток")
+    print("9. Продать коктейль")
+    print("10. Пополнить запас ингредиента")
+    print("11. Пополнить запас напитков")
+    print("12. Список напитков")
+    print("13. Список ингредиентов")
+    print("14. Список коктейлей")
+    print("15. Выход")
 
     try:
         choice = int(input("Введите номер действия:"))
@@ -232,24 +263,28 @@ while True:
     elif choice == 3:
         add_cocktail()
     elif choice == 4:
-        add_drink_to_cocktail()
+        add_component_to_cocktail()
     elif choice == 5:
-        add_ingredient_to_cocktail()
+        add_component_to_cocktail(True)
     elif choice == 6:
-        sell_drink()
+        remove_component_from_cocktail()
     elif choice == 7:
-        sell_cocktail()
+        remove_component_from_cocktail(True)
     elif choice == 8:
-        replenish_ingredient_stock()
+        sell_drink_or_cocktail()
     elif choice == 9:
-        replenish_drink_stock()
+        sell_drink_or_cocktail(True)
     elif choice == 10:
-        list_drinks()
+        replenish_ingredient_stock()
     elif choice == 11:
-        list_ingredients()
+        replenish_ingredient_stock(True)
     elif choice == 12:
-        list_cocktails()
+        list_drinks()
     elif choice == 13:
+        list_ingredients()
+    elif choice == 14:
+        list_cocktails()
+    elif choice == 15:
         break
     else:
         print("Некорректный ввод.")
