@@ -200,6 +200,7 @@ def list_cocktails():
         inner join ingredient on ingredient.id = ingredient
         where ingredients.cocktail = ?
         """, (cocktail[0],)).fetchall()
+
         if not ingredients:
             print("Пусто")
         else:
@@ -214,6 +215,7 @@ def list_cocktails():
         inner join drink on drinks.drink = drink.id
         where drinks.cocktail = ?
         """, (cocktail[0],)).fetchall()
+
         if not drinks:
             print("Пусто")
         else:
@@ -223,6 +225,62 @@ def list_cocktails():
 
         print("\nПолный объём:", volume)
 
+def list_sells():
+    cursor = con.cursor()
+    cursor.execute("""
+    select sells_drink.id, sell_date, name, volume, quantity, price from sells_drink
+    inner join drink on sells_drink.drink = drink.id
+    """)
+    drinks_sells = cursor.fetchall()
+
+    print("Продажи напитков")
+    if not drinks_sells:
+        print("Пусто")
+    else:
+        for x in drinks_sells:
+            print(f"№{x[0]} Дата: {x[1]}, {x[2]} в объеме {x[3]} литр {x[4]} шт. на сумму {x[5]} рублей")
+
+    cursor.execute("""
+        select sells_cocktail.id, sell_date, name, volume, quantity, sells_cocktail.price from sells_cocktail
+        inner join cocktails on sells_cocktail.cocktail = cocktails.id
+        """)
+    cocktails_sells = cursor.fetchall()
+
+    print("Продажи коктейлей")
+    if not cocktails_sells:
+        print("Пусто")
+    else:
+        for x in cocktails_sells:
+            print(f"№{x[0]} Дата: {x[1]}, {x[2]} в объеме {x[3]} литр {x[4]} шт. на сумму {x[5]} рублей")
+
+
+def list_replenishment():
+    cursor = con.cursor()
+    cursor.execute("""
+            select supply_drink.id, supply_date, name, volume, quantity, price from supply_drink
+            inner join drink on supply_drink.drink = drink.id
+            """)
+    drinks_supply = cursor.fetchall()
+
+    print("Пополнение напитков")
+    if not drinks_supply:
+        print("Пусто")
+    else:
+        for x in drinks_supply:
+            print(f"№{x[0]} Дата: {x[1]}, {x[2]} в объеме {x[3]} литр {x[4]} шт. на сумму {x[5]} рублей")
+
+    cursor.execute("""
+            select supply_ingredient.id, supply_date, name, volume, quantity, price from supply_ingredient
+            inner join ingredient on supply_ingredient.ingredient = ingredient.id
+            """)
+    ingredient_supply = cursor.fetchall()
+
+    print("Продажи коктейлей")
+    if not drinks_supply:
+        print("Пусто")
+    else:
+        for x in ingredient_supply:
+            print(f"№{x[0]} Дата: {x[1]}, {x[2]} в объеме {x[3]} литр {x[4]} шт. на сумму {x[5]} рублей")
 
 while True:
     print("Выберите действие:")
@@ -237,10 +295,12 @@ while True:
     print("9. Продать коктейль")
     print("10. Пополнить запас ингредиента")
     print("11. Пополнить запас напитков")
-    print("12. Список напитков")
-    print("13. Список ингредиентов")
-    print("14. Список коктейлей")
-    print("15. Выход")
+    print("12. Посмотреть продажи")
+    print("13. Посмотреть пополнения")
+    print("14. Список напитков")
+    print("15. Список ингредиентов")
+    print("16. Список коктейлей")
+    print("17. Выход")
 
     try:
         choice = int(input("Введите номер действия:"))
@@ -271,12 +331,16 @@ while True:
     elif choice == 11:
         replenish_ingredient_stock(True)
     elif choice == 12:
-        list_drinks()
+        list_sells()
     elif choice == 13:
-        list_ingredients()
+        list_replenishment()
     elif choice == 14:
-        list_cocktails()
+        list_drinks()
     elif choice == 15:
+        list_ingredients()
+    elif choice == 16:
+        list_cocktails()
+    elif choice == 17:
         break
     else:
         print("Некорректный ввод.")
