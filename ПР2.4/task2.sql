@@ -52,7 +52,7 @@ price float(2) not null
 create table if not exists sells_drink(
 id integer primary key,
 sell_date date not null,
-cocktail int references cocktails(id),
+drink int references drinks(id),
 volume float(3) not null,
 quantity int not null,
 price float(2) not null
