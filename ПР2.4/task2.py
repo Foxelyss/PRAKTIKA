@@ -31,7 +31,7 @@ def add_drink():
     alcohol_percentage = int(input("Введите крепкость напитка: ")) / 100
     price = float(input("Цена за литр: "))
 
-    cursor.execute("insert INTO drink values (null, ?, ?, ?)",(name, alcohol_percentage, price))
+    cursor.execute("insert INTO drink values (null, ?, ?, ?)", (name, alcohol_percentage, price))
 
     con.commit()
     print("Напиток добавлен.")
@@ -76,6 +76,7 @@ def add_component_to_cocktail(is_ingredient=False):
     print("Напиток добавлен в коктейль.")
     con.commit()
 
+
 def remove_component_from_cocktail(is_ingredient=False):
     cursor = con.cursor()
     cocktail_id = int(input("Введите номер коктейля: "))
@@ -92,6 +93,7 @@ def remove_component_from_cocktail(is_ingredient=False):
     con.commit()
 
     update_cocktail_alcohol_percentage(cursor.lastrowid)
+
 
 def update_cocktail_alcohol_percentage(cocktail_id):
     cursor = con.cursor()
@@ -147,7 +149,6 @@ def replenish_ingredient_stock(is_ingredient=False):
     print("Запас ингредиента пополнен")
 
 
-
 def list_drinks():
     cursor = con.cursor()
     cursor.execute("select * FROM drink")
@@ -190,23 +191,26 @@ def list_cocktails():
     for cocktail in cocktails:
         print(f"№: {cocktail[0]}; Название: {cocktail[1]}; Крепкость: {cocktail[2]}; Цена: {cocktail[3]}")
 
+        volume = 0
+
         print("Ингредиенты в составе:")
 
         ingredients = cursor.execute("""
         select ingredient.name, volume from ingredients
         inner join ingredient on ingredient.id = ingredient
         where ingredients.cocktail = ?
-        """,(cocktail[0],)).fetchall()
+        """, (cocktail[0],)).fetchall()
         if not ingredients:
             print("Пусто")
         else:
             for x in ingredients:
                 print(f"{x[0]} в объёме {x[1]}")
+                volume += x[1]
 
         print("\nНапитки в составе:")
 
         drinks = cursor.execute("""
-        select drink.name , alcohol_percentage, volume FROM  drinks
+        select drink.name , alcohol_percentage, volume FROM drinks
         inner join drink on drinks.drink = drink.id
         where drinks.cocktail = ?
         """, (cocktail[0],)).fetchall()
@@ -215,6 +219,9 @@ def list_cocktails():
         else:
             for x in drinks:
                 print(f"{x[0]} в объёме {x[1]}")
+                volume += x[1]
+
+        print("\nПолный объём:", volume)
 
 
 while True:
