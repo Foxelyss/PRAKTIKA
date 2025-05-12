@@ -138,16 +138,26 @@ def make_suslik_meme(message: telebot.types.Message):
         bot.reply_to(message, "Нужно 3 строки с текстом")
         return
 
+    if len(message_parts[1]) + len(message_parts[2]) > 28*5 or len(message_parts[3]) > 28*5:
+        bot.reply_to(message, "Строки чересчур длинные")
+        return
+
     image = Image.open("suslik.jpg")
 
     draw = ImageDraw.Draw(image)
 
-    font = ImageFont.truetype("pt-astra-sans_bold.ttf", 46)
+    font = ImageFont.truetype("Arial.TTF", 38)
 
-    draw.multiline_text((300, 0), message_parts[1] + "\n" + message_parts[2], (0, 0, 0), font=font,
+    wrap = lambda x: "\n".join(textwrap.wrap(x, width=28))
+
+    question = wrap(message_parts[1])
+    answer = wrap(message_parts[2])
+    response = wrap(message_parts[3])
+
+    draw.multiline_text((300, 0), question + "\n" + answer, (0, 0, 0), font=font,
                         stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
-    draw.text((300, 350), "\n".join(textwrap.wrap(message_parts[3], width=27)), (0, 0, 0), font=font,
-              stroke_fill=(255, 255, 255), stroke_width=4, anchor="mt")
+    draw.text((300, 350), response, (0, 0, 0), font=font,
+              stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
 
     image_buffer = image_manipulation.prepare_png(image)
 
