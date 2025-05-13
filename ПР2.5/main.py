@@ -219,7 +219,7 @@ def get_meme_image():
         base_url = 'https://memesapi.vercel.app/give/ProgrammerHumor/100'
         response = requests.get(base_url)
         data = response.json()
-        data["date"] = str(current_date)
+        data["date"] = str(current_date.date())
 
         with open("meme_cache.json", "w", encoding='utf8') as file:
             json.dump(data, file, indent=2, ensure_ascii=False)
