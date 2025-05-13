@@ -46,7 +46,7 @@ def get_stats():
 
     stats = cursor.fetchall()
 
-    print_format = "{:<19}{:>5}{:>5}{:>5}"
+    print_format = "{:<19} {:>5} {:>5} {:>5}"
     print(print_format.format("Дата", "ЦПУ", "ОЗУ", "ДИСК"))
     for x in stats:
         print(print_format.format(x[1], x[2], x[3], x[4]))
