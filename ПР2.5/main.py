@@ -154,9 +154,44 @@ def make_suslik_meme(message: telebot.types.Message):
     answer = wrap(message_parts[2])
     response = wrap(message_parts[3])
 
-    draw.multiline_text((300, 0), question + "\n" + answer, (0, 0, 0), font=font,
+    draw.text((300, 0), question + "\n" + answer, (0, 0, 0), font=font,
                         stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
     draw.text((300, 350), response, (0, 0, 0), font=font,
+              stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
+
+    image_buffer = image_manipulation.prepare_png(image)
+
+    bot.send_photo(message.chat.id, image_buffer)
+
+@bot.message_handler(commands=['for_better'])
+def make_for_the_better_right_meme(message: telebot.types.Message):
+    message_parts = message.text.split("\n")
+
+    if len(message_parts) != 4:
+        bot.reply_to(message, "Нужно 3 строки с текстом")
+        return
+
+    if len(message_parts[1]) + len(message_parts[2]) > 28*5 or len(message_parts[3]) > 28*5:
+        bot.reply_to(message, "Строки чересчур длинные")
+        return
+
+    image = Image.open("for_the_better_right.jpg")
+
+    draw = ImageDraw.Draw(image)
+
+    font = ImageFont.truetype("Arial.TTF", 38)
+
+    wrap = lambda x: "\n".join(textwrap.wrap(x, width=28))
+
+    question = wrap(message_parts[1])
+    answer = wrap(message_parts[2])
+    response = wrap(message_parts[3])
+
+    draw.text((285, 0), question, (0, 0, 0), font=font,
+                        stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
+    draw.text((855, 0),  answer, (0, 0, 0), font=font,
+                        stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
+    draw.text((855, 570), response, (0, 0, 0), font=font,
               stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
 
     image_buffer = image_manipulation.prepare_png(image)
