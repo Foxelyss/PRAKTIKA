@@ -150,11 +150,9 @@ def make_suslik_meme(message: telebot.types.Message):
 
     font = ImageFont.truetype("Arial.TTF", 38)
 
-    wrap = lambda x: "\n".join(textwrap.wrap(x, width=28))
-
-    question = wrap(message_parts[1])
-    answer = wrap(message_parts[2])
-    response = wrap(message_parts[3])
+    question = wrap_words(message_parts[1])
+    answer = wrap_words(message_parts[2])
+    response = wrap_words(message_parts[3])
 
     draw.text((300, 0), question + "\n" + answer, (0, 0, 0), font=font,
               stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
@@ -174,7 +172,7 @@ def make_for_the_better_right_meme(message: telebot.types.Message):
         bot.reply_to(message, "Нужно 3 строки с текстом")
         return
 
-    if len(message_parts[1]) + len(message_parts[2]) > 28 * 5 or len(message_parts[3]) > 28 * 5:
+    if len(message_parts[1]) > 28 * 5 or len(message_parts[2]) > 28 * 5 or len(message_parts[3]) > 28 * 5:
         bot.reply_to(message, "Строки чересчур длинные")
         return
 
@@ -184,11 +182,9 @@ def make_for_the_better_right_meme(message: telebot.types.Message):
 
     font = ImageFont.truetype("Arial.TTF", 38)
 
-    wrap = lambda x: "\n".join(textwrap.wrap(x, width=28))
-
-    question = wrap(message_parts[1])
-    answer = wrap(message_parts[2])
-    response = wrap(message_parts[3])
+    question = wrap_words(message_parts[1])
+    answer = wrap_words(message_parts[2])
+    response = wrap_words(message_parts[3])
 
     draw.text((285, 0), question, (0, 0, 0), font=font,
               stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
@@ -201,6 +197,8 @@ def make_for_the_better_right_meme(message: telebot.types.Message):
 
     bot.send_photo(message.chat.id, image_buffer)
 
+def wrap_words(x):
+    return "\n".join(textwrap.wrap(x, width=28))
 
 @bot.message_handler(commands=['programming_meme'])
 def make_for_the_better_right_meme(message: telebot.types.Message):
