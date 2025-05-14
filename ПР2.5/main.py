@@ -144,7 +144,7 @@ def make_suslik_meme(message: telebot.types.Message):
         bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image = Image.open("suslik.jpg")
+    image = Image.open("images/suslik.jpg")
 
     draw = ImageDraw.Draw(image)
 
@@ -176,7 +176,7 @@ def make_for_the_better_right_meme(message: telebot.types.Message):
         bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image = Image.open("for_the_better_right.jpg")
+    image = Image.open("images/for_the_better_right.jpg")
 
     draw = ImageDraw.Draw(image)
 

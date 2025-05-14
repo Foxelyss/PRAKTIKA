@@ -37,7 +37,7 @@ def rotate_image(image: Image):
 
 def add_fancy_nose(image: Image):
     image = image.convert("RGBA")
-    fancy_nose = Image.open("clown_nose.png").convert("RGBA")
+    fancy_nose = Image.open("images/clown_nose.png").convert("RGBA")
 
     x, y = image.size
     fancy_nose = fancy_nose.resize((int(x) // 2, int(y) // 2))
@@ -49,7 +49,7 @@ def add_fancy_nose(image: Image):
 
 def make_ha_ha_animation(image: Image):
     image = image.resize((300, 300)).convert("RGBA")
-    cool_glasses = Image.open("cool_glasses.png").resize((300, 300), resample=Image.Resampling.BILINEAR)
+    cool_glasses = Image.open("images/cool_glasses.png").resize((300, 300), resample=Image.Resampling.BILINEAR)
     cool_glasses = cool_glasses.transpose(Image.Transpose.ROTATE_180)
     animation_frames = []
 
@@ -66,7 +66,7 @@ def make_ha_ha_animation(image: Image):
 
 def jail(image: Image):
     image = image.resize((300, 300)).convert("RGBA")
-    jail_image = Image.open("jail.png").resize((300, 300)).convert('RGBA')
+    jail_image = Image.open("images/jail.png").resize((300, 300)).convert('RGBA')
 
     animation_frames = []
 
@@ -82,7 +82,7 @@ def jail(image: Image):
 
 def add_magic_hat(image: Image):
     image = image.convert("RGBA")
-    magic_hat = Image.open("magic_hat.png").convert("RGBA")
+    magic_hat = Image.open("images/magic_hat.png").convert("RGBA")
 
     x, y = image.size
     random_index = random.randrange(0, 4)
