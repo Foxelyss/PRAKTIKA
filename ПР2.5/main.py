@@ -80,7 +80,7 @@ def modify_photo(message: telebot.types.Message):
             bot.send_message(message.chat.id, "Команда не может быть пустой!")
             return
 
-        words = message.caption.split()
+        words = message.caption.split(maxsplit=1)
 
         if not words[0].startswith("/"):
             bot.send_message(message.chat.id, "Команда не найдена!")
@@ -90,18 +90,19 @@ def modify_photo(message: telebot.types.Message):
 
     image = Image.open(downloaded_image)
 
-    for x in image_commands:
-        if user_task == "/" + x.name:
-            super_file = x.processing_func(image)
+    try:
+        command_name_index = image_commands_names.index(user_task[1:])
 
-            if x.is_gif:
-                bot.send_video(message.chat.id, super_file)
-            else:
-                bot.send_photo(message.chat.id, super_file)
+        command = image_commands[command_name_index]
+        resulting_file = command.processing_func(image)
 
-            return
+        if command.is_gif:
+            bot.send_video(message.chat.id, resulting_file)
+        else:
+            bot.send_photo(message.chat.id, resulting_file)
 
-    bot.send_message(message.chat.id, "Команда не найдена!")
+    except ValueError:
+        bot.send_message(message.chat.id, "Команда не найдена!")
 
 
 @bot.message_handler(commands=["cancel"])
