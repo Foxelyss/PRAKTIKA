@@ -5,12 +5,19 @@ import os
 
 import telebot
 from PIL import Image
+from dotenv import load_dotenv
 
 import image_generators
 import meme_text_generators
 import video_generators
 from image_operation import ImageOperation
 import reddit_meme_fetcher
+
+load_dotenv()
+
+API = os.getenv("TELEGRAM_API_KEY")
+bot = telebot.TeleBot(API)
+keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
 
 image_commands = [
     ImageOperation("magic_hat", False, image_generators.add_magic_hat),
@@ -22,11 +29,6 @@ image_commands = [
 image_commands_names = list(map(lambda x: x.name, image_commands))
 
 users_tasks = dict()
-
-API = os.getenv("TELEGRAM_API_KEY")
-bot = telebot.TeleBot(API)
-keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-
 
 def build_keyboard(column_quantity=2):
     button_rows = []
