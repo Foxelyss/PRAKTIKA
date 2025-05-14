@@ -1,7 +1,6 @@
 import io
 import json
 import random
-import textwrap
 import os
 
 import telebot
