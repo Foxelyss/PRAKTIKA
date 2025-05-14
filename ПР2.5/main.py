@@ -5,19 +5,20 @@ import textwrap
 import os
 
 import telebot
-import requests
-from datetime import datetime
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image
 
-import image_manipulation
+import image_generators
+import meme_text_generators
+import video_generators
 from image_operation import ImageOperation
+from reddit_meme_fetcher import get_meme_image
 
 image_commands = [
-    ImageOperation("magic_hat", False, image_manipulation.add_magic_hat),
-    ImageOperation("jail", True, image_manipulation.jail),
-    ImageOperation("MEGA_ROTATION", True, image_manipulation.rotate_image),
-    ImageOperation("ha_ha", True, image_manipulation.make_ha_ha_animation),
-    ImageOperation("bonk", False, image_manipulation.add_fancy_nose)
+    ImageOperation("magic_hat", False, image_generators.add_magic_hat),
+    ImageOperation("jail", True, video_generators.jail),
+    ImageOperation("MEGA_ROTATION", True, video_generators.rotate_image),
+    ImageOperation("ha_ha", True, video_generators.cool_glasses),
+    ImageOperation("bonk", False, image_generators.add_fancy_nose)
 ]
 image_commands_names = list(map(lambda x: x.name, image_commands))
 
@@ -144,22 +145,7 @@ def make_suslik_meme(message: telebot.types.Message):
         bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image = Image.open("images/suslik.jpg")
-
-    draw = ImageDraw.Draw(image)
-
-    font = ImageFont.truetype("Arial.TTF", 38)
-
-    question = wrap_words(message_parts[1])
-    answer = wrap_words(message_parts[2])
-    response = wrap_words(message_parts[3])
-
-    draw.text((300, 0), question + "\n" + answer, (0, 0, 0), font=font,
-              stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
-    draw.text((300, 350), response, (0, 0, 0), font=font,
-              stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
-
-    image_buffer = image_manipulation.prepare_png(image)
+    image_buffer = meme_text_generators.suslik_meme(message_parts)
 
     bot.send_photo(message.chat.id, image_buffer)
 
@@ -176,29 +162,9 @@ def make_for_the_better_right_meme(message: telebot.types.Message):
         bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image = Image.open("images/for_the_better_right.jpg")
-
-    draw = ImageDraw.Draw(image)
-
-    font = ImageFont.truetype("Arial.TTF", 38)
-
-    question = wrap_words(message_parts[1])
-    answer = wrap_words(message_parts[2])
-    response = wrap_words(message_parts[3])
-
-    draw.text((285, 0), question, (0, 0, 0), font=font,
-              stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
-    draw.text((855, 0), answer, (0, 0, 0), font=font,
-              stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
-    draw.text((855, 570), response, (0, 0, 0), font=font,
-              stroke_fill=(255, 255, 255), stroke_width=4, align='center', anchor="ma")
-
-    image_buffer = image_manipulation.prepare_png(image)
+    image_buffer = meme_text_generators.for_the_better_right_meme(message_parts)
 
     bot.send_photo(message.chat.id, image_buffer)
-
-def wrap_words(x):
-    return "\n".join(textwrap.wrap(x, width=28))
 
 @bot.message_handler(commands=['programming_meme'])
 def make_for_the_better_right_meme(message: telebot.types.Message):
@@ -208,32 +174,5 @@ def make_for_the_better_right_meme(message: telebot.types.Message):
     bot.send_photo(message.chat.id, image["url"],
                    caption=f"{image_title}\nАвтор: {image["author"]}\n<a href=\"{image["postLink"]}\">Клик на пост!</a>",
                    parse_mode="HTML")
-
-
-def get_meme_image():
-    history = load_history()
-
-    current_date = datetime.today()
-
-    if (current_date - datetime.strptime(history["date"], "%Y-%m-%d")).days > 8:
-        base_url = 'https://memesapi.vercel.app/give/ProgrammerHumor/100'
-        response = requests.get(base_url)
-        data = response.json()
-        data["date"] = str(current_date.date())
-
-        with open("meme_cache.json", "w", encoding='utf8') as file:
-            json.dump(data, file, indent=2, ensure_ascii=False)
-
-        return random.choice(data["memes"])
-
-    return random.choice(history["memes"])
-
-
-def load_history():
-    try:
-        with open("meme_cache.json", "r", encoding='utf8') as file:
-            return json.load(file)
-    except:
-        return {"date": "2007-01-01"}
 
 bot.infinity_polling()
