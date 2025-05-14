@@ -11,7 +11,7 @@ import image_generators
 import meme_text_generators
 import video_generators
 from image_operation import ImageOperation
-from reddit_meme_fetcher import get_meme_image
+import reddit_meme_fetcher
 
 image_commands = [
     ImageOperation("magic_hat", False, image_generators.add_magic_hat),
@@ -145,7 +145,7 @@ def make_suslik_meme(message: telebot.types.Message):
         bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image_buffer = meme_text_generators.suslik_meme(message_parts)
+    image_buffer = meme_text_generators.suslik_meme(message_parts[1:4])
 
     bot.send_photo(message.chat.id, image_buffer)
 
@@ -162,13 +162,13 @@ def make_for_the_better_right_meme(message: telebot.types.Message):
         bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image_buffer = meme_text_generators.for_the_better_right_meme(message_parts)
+    image_buffer = meme_text_generators.for_the_better_right_meme(message_parts[1:4])
 
     bot.send_photo(message.chat.id, image_buffer)
 
 @bot.message_handler(commands=['programming_meme'])
 def make_for_the_better_right_meme(message: telebot.types.Message):
-    image = get_meme_image()
+    image = reddit_meme_fetcher.get_meme_image()
     image_title = image["title"].replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
 
     bot.send_photo(message.chat.id, image["url"],
