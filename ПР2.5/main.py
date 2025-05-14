@@ -50,6 +50,8 @@ def build_keyboard(column_quantity=2):
 
 build_keyboard(3)
 
+with open("motivational_quotes.json", "r") as a:
+    quotes = json.load(a)
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
@@ -128,9 +130,7 @@ def send_code_from_user(message: telebot.types.Message):
 
 @bot.message_handler(commands=['motivate'])
 def send_motivational_quote(message: telebot.types.Message):
-    with open("motivational_quotes.json", "r") as a:
-        quotes = json.load(a)
-        bot.send_message(message.chat.id, random.choice(quotes))
+    bot.send_message(message.chat.id, random.choice(quotes))
 
 
 @bot.message_handler(commands=['suslik'])
