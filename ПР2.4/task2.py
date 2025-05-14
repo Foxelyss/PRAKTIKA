@@ -135,7 +135,7 @@ def sell_drink_or_cocktail(is_cocktail=False):
 def replenish_ingredient_stock(is_ingredient=False):
     cursor = con.cursor()
     ingredient_id = int(input("Введите ID ингредиента: "))
-    quantity = float(input("Введите количество пополнения: "))
+    quantity = int(input("Введите количество пополнения: "))
     volume = float(input("Введите объем(литры) пополнения: "))
     price = float(input("Введите сумму закупки: "))
 
