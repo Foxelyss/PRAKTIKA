@@ -132,7 +132,7 @@ def sell_drink_or_cocktail(is_cocktail=False):
     print("Продажа успешна")
 
 
-def replenish_ingredient_stock(is_ingredient=False):
+def replenish_component_stock(is_ingredient=False):
     cursor = con.cursor()
     ingredient_id = int(input("Введите ID ингредиента: "))
     quantity = int(input("Введите количество пополнения: "))
@@ -327,9 +327,9 @@ while True:
     elif choice == 9:
         sell_drink_or_cocktail(True)
     elif choice == 10:
-        replenish_ingredient_stock()
+        replenish_component_stock()
     elif choice == 11:
-        replenish_ingredient_stock(True)
+        replenish_component_stock(True)
     elif choice == 12:
         list_sells()
     elif choice == 13:
