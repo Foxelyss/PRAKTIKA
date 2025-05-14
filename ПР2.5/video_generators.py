@@ -16,8 +16,6 @@ def rotate_image(image: Image):
     return prepare_gif(animation_frames)
 
 
-
-
 def cool_glasses(image: Image):
     image = image.resize((300, 300)).convert("RGBA")
     cool_glasses = Image.open("images/cool_glasses.png").resize((300, 300), resample=Image.Resampling.BILINEAR)
@@ -49,4 +47,3 @@ def jail(image: Image):
         animation_frames.append(a)
 
     return prepare_gif(animation_frames)
-

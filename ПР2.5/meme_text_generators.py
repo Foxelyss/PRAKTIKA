@@ -44,5 +44,6 @@ def for_the_better_right_meme(message_parts):
 
     return image_utils.prepare_png(image)
 
+
 def wrap_words(x):
     return "\n".join(textwrap.wrap(x, width=28))

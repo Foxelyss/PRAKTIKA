@@ -1,6 +1,4 @@
 import io
-import math
-import random
 
 from PIL import Image
 
