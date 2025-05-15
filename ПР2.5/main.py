@@ -2,8 +2,10 @@ import io
 import json
 import random
 import os
-
 import telebot
+import asyncio
+
+from telebot.async_telebot import AsyncTeleBot
 from PIL import Image
 from dotenv import load_dotenv
 
@@ -12,11 +14,12 @@ import meme_text_generators
 import video_generators
 from image_operation import ImageOperation
 import reddit_meme_fetcher
+from sync_in_async.sync_in_async import SyncInAsync
 
 load_dotenv()
 
 API = os.getenv("TELEGRAM_API_KEY")
-bot = telebot.TeleBot(API)
+bot = AsyncTeleBot(API)
 keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
 
 image_commands = [
@@ -29,6 +32,7 @@ image_commands = [
 image_commands_names = list(map(lambda x: x.name, image_commands))
 
 users_tasks = dict()
+
 
 def build_keyboard(column_quantity=2):
     button_rows = []
@@ -55,24 +59,30 @@ build_keyboard(3)
 with open("motivational_quotes.json", "r") as a:
     quotes = json.load(a)
 
+
+async def make_operation_async(func):
+    async_manager = SyncInAsync()
+    return await async_manager.Call(func=func)
+
+
 @bot.message_handler(commands=['start'])
-def handle_start(message):
-    bot.send_message(message.chat.id,
-                     r"*Приветики\!* Приветствую вас в [моём](https://t.me/foxehub) ТГ БОТЕ для _создания_ мемов",
-                     reply_markup=keyboard, parse_mode="MarkdownV2")
+async def handle_start(message):
+    await bot.send_message(message.chat.id,
+                           r"*Приветики\!* Приветствую вас в [моём](https://t.me/foxehub) ТГ БОТЕ для _создания_ мемов",
+                           reply_markup=keyboard, parse_mode="MarkdownV2")
 
 
 @bot.message_handler(commands=image_commands_names)
-def send_task(message: telebot.types.Message):
-    bot.send_message(message.chat.id, r"_Ожидаю фотографию\.\.\._", parse_mode="MarkdownV2")
+async def send_task(message: telebot.types.Message):
+    await bot.send_message(message.chat.id, r"_Ожидаю фотографию\.\.\._", parse_mode="MarkdownV2")
     users_tasks[message.from_user.id] = message.text.split(maxsplit=1)[0]
 
 
 @bot.message_handler(content_types=['photo'])
-def modify_photo(message: telebot.types.Message):
+async def modify_photo(message: telebot.types.Message):
     file_id = message.photo[-1].file_id
-    file_info = bot.get_file(file_id)
-    downloaded_file = bot.download_file(file_info.file_path)
+    file_info = await bot.get_file(file_id)
+    downloaded_file = await bot.download_file(file_info.file_path)
 
     downloaded_image = io.BytesIO(downloaded_file)
     downloaded_image.name = "user_image.jpg"
@@ -81,13 +91,13 @@ def modify_photo(message: telebot.types.Message):
 
     if user_task == "":
         if message.caption is None:
-            bot.send_message(message.chat.id, "Команда не может быть пустой!")
+            await bot.send_message(message.chat.id, "Команда не может быть пустой!")
             return
 
         words = message.caption.split(maxsplit=1)
 
         if not words[0].startswith("/"):
-            bot.send_message(message.chat.id, "Команда не найдена!")
+            await bot.send_message(message.chat.id, "Команда не найдена!")
             return
 
         user_task = words[0]
@@ -98,83 +108,86 @@ def modify_photo(message: telebot.types.Message):
         command_name_index = image_commands_names.index(user_task[1:])
 
         command = image_commands[command_name_index]
-        resulting_file = command.processing_func(image)
+        resulting_file = await make_operation_async(func=lambda: command.processing_func(image))
 
         if command.is_gif:
-            bot.send_video(message.chat.id, resulting_file)
+            await bot.send_video(message.chat.id, resulting_file)
         else:
-            bot.send_photo(message.chat.id, resulting_file)
+            await bot.send_photo(message.chat.id, resulting_file)
 
     except ValueError:
-        bot.send_message(message.chat.id, "Команда не найдена!")
+        await bot.send_message(message.chat.id, "Команда не найдена!")
 
 
 @bot.message_handler(commands=["cancel"])
-def send_task(message: telebot.types.Message):
-    bot.send_message(message.chat.id, "Галя отмена!")
+async def send_task(message: telebot.types.Message):
+    await bot.send_message(message.chat.id, "Галя отмена!")
     users_tasks.pop(message.from_user.id, "")
 
 
 @bot.message_handler(commands=['code'])
-def send_code_from_user(message: telebot.types.Message):
+async def send_code_from_user(message: telebot.types.Message):
     code = message.text.replace("/code ", "", 1).replace("\\", "\\\\").replace("`", r"\`")
 
     if len(code.split()) < 2:
-        bot.reply_to(message, "Нужно указать не только язык программирования!")
+        await bot.reply_to(message, "Нужно указать не только язык программирования!")
         return
 
     message_body = "```"
     message_body += code
     message_body += "\n```"
 
-    bot.send_message(message.chat.id, message_body, parse_mode="MarkdownV2")
+    await bot.send_message(message.chat.id, message_body, parse_mode="MarkdownV2")
 
 
 @bot.message_handler(commands=['motivate'])
-def send_motivational_quote(message: telebot.types.Message):
-    bot.send_message(message.chat.id, random.choice(quotes))
+async def send_motivational_quote(message: telebot.types.Message):
+    await bot.send_message(message.chat.id, random.choice(quotes))
 
 
 @bot.message_handler(commands=['suslik'])
-def make_suslik_meme(message: telebot.types.Message):
+async def make_suslik_meme(message: telebot.types.Message):
     message_parts = message.text.split("\n")
 
     if len(message_parts) != 4:
-        bot.reply_to(message, "Нужно 3 строки с текстом")
+        await bot.reply_to(message, "Нужно 3 строки с текстом")
         return
 
     if len(message_parts[1]) + len(message_parts[2]) > 28 * 5 or len(message_parts[3]) > 28 * 5:
-        bot.reply_to(message, "Строки чересчур длинные")
+        await bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image_buffer = meme_text_generators.suslik_meme(message_parts[1:4])
+    image_buffer = make_operation_async(func=lambda: meme_text_generators.suslik_meme(message_parts[1:4]))
 
-    bot.send_photo(message.chat.id, image_buffer)
+    await bot.send_photo(message.chat.id, image_buffer)
 
 
 @bot.message_handler(commands=['for_better'])
-def make_for_the_better_right_meme(message: telebot.types.Message):
+async def make_for_the_better_right_meme(message: telebot.types.Message):
     message_parts = message.text.split("\n")
 
     if len(message_parts) != 4:
-        bot.reply_to(message, "Нужно 3 строки с текстом")
+        await bot.reply_to(message, "Нужно 3 строки с текстом")
         return
 
     if len(message_parts[1]) > 28 * 5 or len(message_parts[2]) > 28 * 5 or len(message_parts[3]) > 28 * 5:
-        bot.reply_to(message, "Строки чересчур длинные")
+        await bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image_buffer = meme_text_generators.for_the_better_right_meme(message_parts[1:4])
+    image_buffer = await make_operation_async(
+        func=lambda: meme_text_generators.for_the_better_right_meme(message_parts[1:4]))
 
-    bot.send_photo(message.chat.id, image_buffer)
+    await bot.send_photo(message.chat.id, image_buffer)
+
 
 @bot.message_handler(commands=['programming_meme'])
-def make_for_the_better_right_meme(message: telebot.types.Message):
+async def make_for_the_better_right_meme(message: telebot.types.Message):
     image = reddit_meme_fetcher.get_meme_image()
     image_title = image["title"].replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
 
-    bot.send_photo(message.chat.id, image["url"],
-                   caption=f"{image_title}\nАвтор: {image["author"]}\n<a href=\"{image["postLink"]}\">Клик на пост!</a>",
-                   parse_mode="HTML")
+    await bot.send_photo(message.chat.id, image["url"],
+                         caption=f"{image_title}\nАвтор: {image["author"]}\n<a href=\"{image["postLink"]}\">Клик на пост!</a>",
+                         parse_mode="HTML")
 
-bot.infinity_polling()
+
+asyncio.run(bot.polling())
