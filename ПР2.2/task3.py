@@ -8,10 +8,10 @@ class Pair:
         self.a = a
         self.b = b
 
-    def set_a(self, a):
+    def set_a(self, a: int):
         self.a = a
 
-    def set_b(self, b):
+    def set_b(self, b: int):
         self.b = b
 
     def sum(self):
@@ -20,7 +20,8 @@ class Pair:
     def max(self):
         return self.a if self.a > self.b else self.b
 
-pair = Pair(12,32)
+
+pair = Pair(12, 32)
 
 print(f"Максимальное число {pair.max()}, сумма чисел {pair.sum()}")
 

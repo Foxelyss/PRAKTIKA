@@ -18,13 +18,13 @@ class Student:
 
         self.grades = grades.copy()
 
-    def set_surname(self, surname):
+    def set_surname(self, surname: str):
         self.surname = surname
 
-    def set_birthdate(self, birthdate):
+    def set_birthdate(self, birthdate: date):
         self.birthdate = birthdate
 
-    def set_group_number(self, group_number):
+    def set_group_number(self, group_number: int):
         self.group_number = group_number
 
     def print_information(self):
@@ -48,5 +48,5 @@ student.print_information()
 student.set_group_number(456)
 student.print_information()
 
-student.set_birthdate(date(2007,12,12))
+student.set_birthdate(date(2007, 12, 12))
 student.print_information()

@@ -16,7 +16,7 @@ class Pair:
         return self.__a
 
     @a.setter
-    def a(self, a):
+    def a(self, a: int):
         self.__a = a
 
     @property
@@ -24,7 +24,7 @@ class Pair:
         return self.__b
 
     @b.setter
-    def b(self, b):
+    def b(self, b: int):
         self.__b = b
 
 first_pair = Pair()
