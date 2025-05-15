@@ -7,7 +7,7 @@ import image_utils
 
 
 class TextMemeGenerator(ABC):
-    def __init__(self, message_parts):
+    def __init__(self, message_parts:[str]):
         self.message_parts = message_parts
 
     @abstractmethod
@@ -79,5 +79,5 @@ class ForTheBetterMeme(TextMemeGenerator):
         return 3
 
 
-def wrap_words(x, width=28):
+def wrap_words(x: str, width=28):
     return "\n".join(textwrap.wrap(x, width=width))

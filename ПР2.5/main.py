@@ -161,7 +161,7 @@ async def make_suslik_meme(message: telebot.types.Message):
         await bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image_buffer = make_operation_async(func=lambda: meme_text_generator.generate())
+    image_buffer = await make_operation_async(func=lambda: meme_text_generator.generate())
 
     await bot.send_photo(message.chat.id, image_buffer)
 
