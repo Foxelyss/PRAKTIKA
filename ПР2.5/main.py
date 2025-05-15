@@ -10,10 +10,10 @@ from PIL import Image
 from dotenv import load_dotenv
 
 import image_generators
-import meme_text_generators
 import video_generators
 from image_operation import ImageOperation
 import reddit_meme_fetcher
+from meme_text_generators import SuslikMeme, ForTheBetterMeme
 from sync_in_async.sync_in_async import SyncInAsync
 
 load_dotenv()
@@ -149,15 +149,19 @@ async def send_motivational_quote(message: telebot.types.Message):
 async def make_suslik_meme(message: telebot.types.Message):
     message_parts = message.text.split("\n")
 
-    if len(message_parts) != 4:
+    if len(message_parts) != SuslikMeme.get_phrases_quantity() + 1:
         await bot.reply_to(message, "Нужно 3 строки с текстом")
         return
 
-    if len(message_parts[1]) + len(message_parts[2]) > 28 * 5 or len(message_parts[3]) > 28 * 5:
+    phrases = message_parts[1:4]
+
+    meme_text_generator = SuslikMeme(phrases)
+
+    if meme_text_generator.check_strings_length():
         await bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image_buffer = make_operation_async(func=lambda: meme_text_generators.suslik_meme(message_parts[1:4]))
+    image_buffer = make_operation_async(func=lambda: meme_text_generator.generate())
 
     await bot.send_photo(message.chat.id, image_buffer)
 
@@ -166,16 +170,19 @@ async def make_suslik_meme(message: telebot.types.Message):
 async def make_for_the_better_right_meme(message: telebot.types.Message):
     message_parts = message.text.split("\n")
 
-    if len(message_parts) != 4:
+    if len(message_parts) != ForTheBetterMeme.get_phrases_quantity() + 1:
         await bot.reply_to(message, "Нужно 3 строки с текстом")
         return
 
-    if len(message_parts[1]) > 28 * 5 or len(message_parts[2]) > 28 * 5 or len(message_parts[3]) > 28 * 5:
+    phrases = message_parts[1:4]
+
+    meme_text_generator = ForTheBetterMeme(phrases)
+
+    if meme_text_generator.check_strings_length():
         await bot.reply_to(message, "Строки чересчур длинные")
         return
 
-    image_buffer = await make_operation_async(
-        func=lambda: meme_text_generators.for_the_better_right_meme(message_parts[1:4]))
+    image_buffer = await make_operation_async(func=lambda: meme_text_generator.generate())
 
     await bot.send_photo(message.chat.id, image_buffer)
 
