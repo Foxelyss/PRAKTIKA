@@ -15,12 +15,15 @@ from image_operation import ImageOperation
 import reddit_meme_fetcher
 from meme_text_generators import SuslikMeme, ForTheBetterMeme
 from sync_in_async.sync_in_async import SyncInAsync
+import gc
 
 load_dotenv()
 
 API = os.getenv("TELEGRAM_API_KEY")
 bot = AsyncTeleBot(API)
 keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+gc.set_threshold(1024,512,256)
 
 image_commands = [
     ImageOperation("magic_hat", False, image_generators.add_magic_hat),
@@ -115,9 +118,11 @@ async def modify_photo(message: telebot.types.Message):
         else:
             await bot.send_photo(message.chat.id, resulting_file)
 
+        del resulting_file
     except ValueError:
         await bot.send_message(message.chat.id, "Команда не найдена!")
 
+    del downloaded_image
 
 @bot.message_handler(commands=["cancel"])
 async def send_task(message: telebot.types.Message):
@@ -165,6 +170,8 @@ async def make_suslik_meme(message: telebot.types.Message):
 
     await bot.send_photo(message.chat.id, image_buffer)
 
+    del image_buffer
+
 
 @bot.message_handler(commands=['for_better'])
 async def make_for_the_better_right_meme(message: telebot.types.Message):
@@ -185,6 +192,8 @@ async def make_for_the_better_right_meme(message: telebot.types.Message):
     image_buffer = await make_operation_async(func=lambda: meme_text_generator.generate())
 
     await bot.send_photo(message.chat.id, image_buffer)
+
+    del image_buffer
 
 
 @bot.message_handler(commands=['programming_meme'])
